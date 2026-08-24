@@ -1,0 +1,2 @@
+import { Booking } from '../types'
+export const booking: Booking = { reference: 'JIN-2026-08421', tourSlug: 'gobi-4d', status: 'Хүсэлт илгээгдсэн', date: '2026.09.14 – 2026.09.17', travelers: 2, total: 1160 }
