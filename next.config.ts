@@ -1,5 +1,22 @@
 import type { NextConfig } from 'next'
 
+const supabaseStoragePattern = (() => {
+  const value = process.env.NEXT_PUBLIC_SUPABASE_URL
+  if (!value) return undefined
+
+  try {
+    const url = new URL(value)
+    if (url.protocol !== 'https:') return undefined
+    return {
+      protocol: 'https' as const,
+      hostname: url.hostname,
+      pathname: '/storage/v1/object/public/**',
+    }
+  } catch {
+    return undefined
+  }
+})()
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -7,11 +24,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'gvpgvtzkhcbqpjpbndsa.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
+      ...(supabaseStoragePattern ? [supabaseStoragePattern] : []),
     ],
   },
 }
