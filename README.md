@@ -21,3 +21,10 @@ DATABASE_URL='postgresql://...' npx prisma db seed
 ```
 
 Keep `DATABASE_URL` inline or in `.env.local`; do not commit local credentials.
+
+## Supabase Storage image setup
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local`.
+The authenticated itinerary image upload action uses the `tour-images` bucket
+and creates it as public on the first upload if it does not already exist.
+The service-role key is server-only and must never be exposed to the browser.

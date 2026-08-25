@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from 'react'
 import { translations } from '../lib/i18n/translations'
 import { Language } from '../lib/types'
 
-export type TranslationKey = keyof typeof translations.en | 'gallery' | 'invalidName' | 'invalidTravelers' | 'invalidDate' | 'tourNotFound' | 'bookingFailed' | 'loadError' | 'tryAgain' | 'notFoundTitle' | 'notFoundMessage' | 'duplicateSlug' | 'invalidTitle' | 'invalidPrice' | 'createFailed' | 'saveFailed' | 'statusUpdateFailed' | 'unauthorized' | 'adminLoginTitle' | 'adminLoginDescription' | 'email' | 'password' | 'signIn' | 'signingIn' | 'invalidCredentials' | 'logout'
+export type TranslationKey = keyof typeof translations.en | 'gallery' | 'invalidName' | 'invalidTravelers' | 'invalidDate' | 'tourNotFound' | 'bookingFailed' | 'loadError' | 'tryAgain' | 'notFoundTitle' | 'notFoundMessage' | 'duplicateSlug' | 'invalidTitle' | 'invalidPrice' | 'createFailed' | 'saveFailed' | 'statusUpdateFailed' | 'unauthorized' | 'invalidImage' | 'imageTooLarge' | 'uploadFailed' | 'adminLoginTitle' | 'adminLoginDescription' | 'email' | 'password' | 'signIn' | 'signingIn' | 'invalidCredentials' | 'logout'
 export type Translate = (key: TranslationKey, fallback?: string) => string
 
 interface LanguageContextValue { language: Language; setLanguage: (language: Language) => void; t: Translate }

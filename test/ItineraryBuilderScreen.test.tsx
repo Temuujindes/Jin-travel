@@ -2,11 +2,15 @@ import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 import ItineraryBuilder from '../components/admin/ItineraryBuilder'
 import { saveItinerary } from '../app/actions/itinerary'
+import { uploadTourImage } from '../app/actions/storage'
 import { withProvider } from './helpers'
 import { fixtureTour } from './fixtures'
 
 vi.mock('../app/actions/itinerary', () => ({
   saveItinerary: vi.fn().mockResolvedValue({ success: true }),
+}))
+vi.mock('../app/actions/storage', () => ({
+  uploadTourImage: vi.fn().mockResolvedValue({ success: true, url: 'https://gvpgvtzkhcbqpjpbndsa.supabase.co/storage/v1/object/public/tour-images/test.jpg' }),
 }))
 
 afterEach(() => {
@@ -16,11 +20,6 @@ afterEach(() => {
 
 describe('ItineraryBuilder screen', () => {
   it('edits builder fields, uploads an image, and removes a day', async () => {
-    const createObjectURL = vi.fn().mockReturnValue('blob:image')
-    Object.defineProperty(URL, 'createObjectURL', {
-      configurable: true,
-      value: createObjectURL,
-    })
     const { container } = withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
     const editorPanel = container.querySelector('.editor-panel')!
     const generalFields = editorPanel.querySelectorAll('input, textarea')
@@ -41,7 +40,8 @@ describe('ItineraryBuilder screen', () => {
     const file = new File(['image'], 'day.jpg', { type: 'image/jpeg' })
     const fileInput = container.querySelector('input[type="file"]')!
     fireEvent.change(fileInput, { target: { files: [file] } })
-    expect(createObjectURL).toHaveBeenCalledWith(file)
+    await waitFor(() => expect(vi.mocked(uploadTourImage)).toHaveBeenCalledWith(file))
+    await waitFor(() => expect(container.querySelector('.upload-preview img')).toHaveAttribute('src', 'https://gvpgvtzkhcbqpjpbndsa.supabase.co/storage/v1/object/public/tour-images/test.jpg'))
     fireEvent.change(fileInput, { target: { files: [] } })
     fireEvent.click(screen.getAllByRole('button', { name: '취소' })[0])
 
@@ -54,7 +54,6 @@ describe('ItineraryBuilder screen', () => {
     expect(description).toHaveValue('Updated details')
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete day' })[0])
     expect(container.querySelectorAll('.day-editor')).toHaveLength(initialDayCount)
-    createObjectURL.mockRestore()
   })
 
   it('does not show saved state when persistence fails', async () => {
@@ -62,5 +61,13 @@ describe('ItineraryBuilder screen', () => {
     withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
     fireEvent.click(screen.getByRole('button', { name: '저장' }))
     await waitFor(() => expect(screen.getByRole('button', { name: '저장' })).toBeInTheDocument())
+  })
+
+  it('shows upload failures through the existing error markup', async () => {
+    vi.mocked(uploadTourImage).mockResolvedValueOnce({ success: false, code: 'uploadFailed' })
+    const { container } = withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
+    const file = new File(['image'], 'day.jpg', { type: 'image/jpeg' })
+    fireEvent.change(container.querySelector('input[type="file"]')!, { target: { files: [file] } })
+    await waitFor(() => expect(screen.getByText('이미지를 업로드하지 못했습니다. 다시 시도해주세요.')).toBeInTheDocument())
   })
 })

@@ -34,6 +34,9 @@ Object.assign(translations.mn, {
   signingIn: 'Нэвтэрч байна...',
   invalidCredentials: 'Имэйл эсвэл нууц үг буруу байна.',
   logout: 'Гарах',
+  invalidImage: 'Зөвхөн зургийн файл сонгоно уу.',
+  imageTooLarge: 'Зургийн хэмжээ 10MB-ээс хэтэрсэн байна.',
+  uploadFailed: 'Зургийг байршуулж чадсангүй. Дахин оролдоно уу.',
 })
 
 Object.assign(translations.kr, {
@@ -61,6 +64,9 @@ Object.assign(translations.kr, {
   signingIn: '로그인 중...',
   invalidCredentials: '이메일 또는 비밀번호가 올바르지 않습니다.',
   logout: '로그아웃',
+  invalidImage: '이미지 파일만 선택해주세요.',
+  imageTooLarge: '이미지 크기는 10MB를 초과할 수 없습니다.',
+  uploadFailed: '이미지를 업로드하지 못했습니다. 다시 시도해주세요.',
 })
 
 Object.assign(translations.en, {
@@ -88,4 +94,7 @@ Object.assign(translations.en, {
   signingIn: 'Signing in...',
   invalidCredentials: 'The email or password is incorrect.',
   logout: 'Sign out',
+  invalidImage: 'Please choose an image file.',
+  imageTooLarge: 'Images must be 10MB or smaller.',
+  uploadFailed: 'The image could not be uploaded. Please try again.',
 })
