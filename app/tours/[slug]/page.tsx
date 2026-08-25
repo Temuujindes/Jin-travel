@@ -3,6 +3,8 @@ import { toDisplayTour } from '../../../lib/mappers'
 import { prisma } from '../../../lib/db'
 import { notFound } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 export default async function TourPage({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params
 	const row = await prisma.tour.findUnique({

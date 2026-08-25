@@ -2,6 +2,8 @@ import MyBookingScreen from '../../components/MyBookingScreen'
 import { toDisplayBooking, toDisplayTour } from '../../lib/mappers'
 import { prisma } from '../../lib/db'
 
+export const dynamic = 'force-dynamic'
+
 export default async function BookingPage() {
   const row = await prisma.booking.findFirst({
     orderBy: { createdAt: 'desc' },

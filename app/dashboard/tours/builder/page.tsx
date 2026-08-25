@@ -2,6 +2,8 @@ import ItineraryBuilder from '../../../../components/admin/ItineraryBuilder'
 import { toDisplayTour } from '../../../../lib/mappers'
 import { prisma } from '../../../../lib/db'
 
+export const dynamic = 'force-dynamic'
+
 export default async function BuilderPage({ searchParams }: { searchParams: Promise<{ tour?: string }> }) {
   const { tour: slug } = await searchParams
   const row = slug

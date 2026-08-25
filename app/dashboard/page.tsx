@@ -3,6 +3,8 @@ import { toDisplayInquiry } from '../../lib/mappers'
 import { calculateDashboardMetrics, calculateInquiryConversion } from '../../lib/admin-aggregates'
 import { prisma } from '../../lib/db'
 
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   const now = new Date()
   const [bookings, tours, inquiries] = await Promise.all([

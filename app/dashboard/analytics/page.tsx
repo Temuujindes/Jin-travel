@@ -2,6 +2,8 @@ import AnalyticsScreen from '../../../components/admin/AnalyticsScreen'
 import { buildInquiryGrowth, formatTrend } from '../../../lib/admin-aggregates'
 import { prisma } from '../../../lib/db'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AnalyticsPage() {
   const now = new Date()
   // Traffic remains mock data because no traffic source is stored in this phase.
