@@ -1,4 +1,4 @@
-// Seeds the real JIN Travel catalog, one sample booking, and one local admin user.
+// Seeds the real JIN Travel catalog and one local admin user.
 
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
@@ -56,31 +56,6 @@ async function main() {
       },
     })
   }
-
-  const referenceCode = `JIN-${new Date().getFullYear()}-08421`
-  await prisma.booking.upsert({
-    where: { referenceCode },
-    create: {
-      tour: { connect: { slug: 'gobi-4d' } },
-      customerName: 'Sample Guest',
-      contact: 'sample@example.com',
-      startDate: new Date('2026-09-14T00:00:00.000Z'),
-      travelers: 2,
-      specialRequest: null,
-      status: 'Шинэ',
-      totalPrice: 1160,
-      referenceCode,
-    },
-    update: {
-      customerName: 'Sample Guest',
-      contact: 'sample@example.com',
-      startDate: new Date('2026-09-14T00:00:00.000Z'),
-      travelers: 2,
-      specialRequest: null,
-      status: 'Шинэ',
-      totalPrice: 1160,
-    },
-  })
 
   // Local development defaults are intentionally non-production credentials and can be overridden with SEED_ADMIN_*.
   const adminEmail = process.env.SEED_ADMIN_EMAIL ?? 'admin@jintravel.local'

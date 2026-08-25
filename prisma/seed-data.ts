@@ -1,4 +1,4 @@
-// Seeds the real JIN Travel catalog, one sample booking, and one local admin user.
+// Provides the real JIN Travel catalog used by the seed script and invariant tests.
 
 import { Prisma } from '@prisma/client'
 

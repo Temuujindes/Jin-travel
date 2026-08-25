@@ -21,7 +21,7 @@ export function formatTrend(current: number, previous: number) {
 }
 
 export function calculateInquiryConversion(bookings: { status: string }[]) {
-  if (bookings.length === 0) return 0
+  if (bookings.length === 0) return null
   const confirmed = bookings.filter((booking) => booking.status === 'Баталгаажсан').length
   return Math.round((confirmed / bookings.length) * 100)
 }

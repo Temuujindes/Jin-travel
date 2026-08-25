@@ -8,7 +8,7 @@ describe('admin aggregate calculations', () => {
   })
 
   it('calculates confirmed booking conversion and handles empty bookings', () => {
-    expect(calculateInquiryConversion([])).toBe(0)
+    expect(calculateInquiryConversion([])).toBeNull()
     expect(calculateInquiryConversion([{ status: 'Баталгаажсан' }, { status: 'Шинэ' }, { status: 'Баталгаажсан' }])).toBe(67)
   })
 

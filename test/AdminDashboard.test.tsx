@@ -16,4 +16,10 @@ describe('InquiryTable', () => {
     expect(container.querySelector('.inquiry-status.confirmed')).toHaveTextContent('Баталгаажсан')
     expect(container.querySelectorAll('.inquiry-row')).toHaveLength(inquiries.length + 1)
   })
+
+  it('renders a localized empty state without inquiry rows', () => {
+    const { container } = withProvider(<InquiryTable inquiries={[]} />)
+    expect(screen.getByText('현재 접수된 문의가 없습니다.')).toBeInTheDocument()
+    expect(container.querySelectorAll('.inquiry-row')).toHaveLength(2)
+  })
 })

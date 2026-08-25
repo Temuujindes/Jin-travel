@@ -37,6 +37,9 @@ Object.assign(translations.mn, {
   invalidImage: 'Зөвхөн зургийн файл сонгоно уу.',
   imageTooLarge: 'Зургийн хэмжээ 10MB-ээс хэтэрсэн байна.',
   uploadFailed: 'Зургийг байршуулж чадсангүй. Дахин оролдоно уу.',
+  noInquiries: 'Одоогоор ирсэн хүсэлт алга байна.',
+  noAnalyticsData: 'Одоогоор харуулах мэдээлэл алга байна.',
+  noBooking: 'Танд одоогоор захиалга алга байна.',
 })
 
 Object.assign(translations.kr, {
@@ -67,6 +70,9 @@ Object.assign(translations.kr, {
   invalidImage: '이미지 파일만 선택해주세요.',
   imageTooLarge: '이미지 크기는 10MB를 초과할 수 없습니다.',
   uploadFailed: '이미지를 업로드하지 못했습니다. 다시 시도해주세요.',
+  noInquiries: '현재 접수된 문의가 없습니다.',
+  noAnalyticsData: '현재 표시할 데이터가 없습니다.',
+  noBooking: '현재 예약이 없습니다.',
 })
 
 Object.assign(translations.en, {
@@ -97,4 +103,7 @@ Object.assign(translations.en, {
   invalidImage: 'Please choose an image file.',
   imageTooLarge: 'Images must be 10MB or smaller.',
   uploadFailed: 'The image could not be uploaded. Please try again.',
+  noInquiries: 'There are no inquiries yet.',
+  noAnalyticsData: 'There is no data to display yet.',
+  noBooking: 'You do not have a booking yet.',
 })

@@ -90,6 +90,10 @@ describe('screen smoke coverage', () => {
     expect(dashboard.container.querySelector('.progress i')).toHaveStyle({ width: '67%' })
     expect(screen.getByText('67%')).toBeInTheDocument()
     dashboard.unmount()
+    const emptyDashboard = withProvider(<AdminDashboard metrics={{ totalBookings: 0, monthlyBookings: 0, revenue: 0, activeTours: 2, bookingTrend: '—', revenueTrend: '—', tourTrend: '+1' }} inquiryConversion={null} inquiries={[]} />)
+    expect(emptyDashboard.container.querySelector('.progress-row strong')).toHaveTextContent('—')
+    expect(emptyDashboard.container).not.toHaveTextContent('NaN')
+    emptyDashboard.unmount()
     withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
     expect(screen.getByRole('heading', { name: /수정 사항은 고객 화면에 즉시 반영/ })).toBeInTheDocument()
   })
@@ -97,6 +101,7 @@ describe('screen smoke coverage', () => {
   it('renders an empty booking state without booking data', () => {
     withProvider(<MyBookingScreen booking={null} tour={null} />)
     expect(screen.getByRole('heading', { name: '내 예약' })).toBeInTheDocument()
+    expect(screen.getByText('현재 예약이 없습니다.')).toBeInTheDocument()
     expect(screen.queryByText('JIN-2026-08421')).not.toBeInTheDocument()
   })
 })

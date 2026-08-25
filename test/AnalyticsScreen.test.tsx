@@ -28,3 +28,8 @@ it('renders analytics cards and charts inside the language provider', () => {
   expect(screen.getByText('인기 투어')).toBeInTheDocument()
   expect(screen.getByText('문의 성장')).toBeInTheDocument()
 })
+
+it('renders localized empty states when booking charts have no data', () => {
+  withProvider(<AnalyticsScreen popular={[]} growth={[{ name: 'Jan', value: 0 }]} growthTrend="—" />)
+  expect(screen.getAllByText('현재 표시할 데이터가 없습니다.')).toHaveLength(2)
+})
