@@ -23,6 +23,7 @@ describe('ItineraryBuilder screen', () => {
     fireEvent.change(generalFields[2], { target: { value: '5 Days' } })
     fireEvent.change(generalFields[3], { target: { value: '700' } })
     fireEvent.click(screen.getByRole('button', { name: '저장' }))
+    expect(screen.getByRole('button', { name: '저장됨' })).toBeInTheDocument()
 
     const firstDay = container.querySelector('.day-editor')!
     const dayInputs = firstDay.querySelectorAll('input')
@@ -37,12 +38,15 @@ describe('ItineraryBuilder screen', () => {
     expect(createObjectURL).toHaveBeenCalledWith(file)
     fireEvent.click(screen.getAllByRole('button', { name: '취소' })[0])
 
+    const initialDayCount = container.querySelectorAll('.day-editor').length
     fireEvent.click(screen.getByRole('button', { name: '일정 추가' }))
+    expect(container.querySelectorAll('.day-editor')).toHaveLength(initialDayCount + 1)
     fireEvent.click(screen.getAllByRole('button', { name: 'EN' })[1])
     const description = container.querySelectorAll('.day-editor textarea')[0]
     fireEvent.change(description, { target: { value: 'Updated details' } })
     expect(description).toHaveValue('Updated details')
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete day' })[0])
+    expect(container.querySelectorAll('.day-editor')).toHaveLength(initialDayCount)
     createObjectURL.mockRestore()
   })
 })

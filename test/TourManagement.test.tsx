@@ -55,7 +55,9 @@ describe('TourManagement', () => {
     fireEvent.change(screen.getByRole('textbox', { name: /제목 MN/ }), { target: { value: 'Defaults Tour' } })
     fireEvent.click(screen.getByRole('button', { name: '저장' }))
     expect(screen.getByText('Defaults Tour')).toBeInTheDocument()
+    expect(container.querySelectorAll('.tour-admin-row')).toHaveLength(4)
     fireEvent.click(screen.getByRole('button', { name: '전체' }))
+    expect(container.querySelectorAll('.tour-admin-row')).toHaveLength(4)
   })
 
   it('toggles active and draft status from each row action', () => {
@@ -63,6 +65,7 @@ describe('TourManagement', () => {
     fireEvent.click(screen.getAllByRole('button', { name: '초안으로 변경' })[0])
     expect(container.querySelectorAll('.admin-tour-status.draft')).toHaveLength(2)
     fireEvent.click(screen.getAllByRole('button', { name: '게시' })[0])
+    expect(container.querySelectorAll('.admin-tour-status.active')).toHaveLength(2)
     fireEvent.click(screen.getAllByRole('button', { name: '게시' })[0])
     expect(container.querySelectorAll('.admin-tour-status.active')).toHaveLength(3)
   })
