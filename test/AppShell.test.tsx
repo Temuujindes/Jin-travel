@@ -17,6 +17,13 @@ describe('AppShell navigation', () => {
     expect(mn).not.toHaveClass('active')
   })
 
+  it('links the brand logo home', () => {
+    withProvider(<Header />)
+    const logo = screen.getByAltText('JIN Travel Mongolia')
+    expect(logo).toHaveAttribute('src', '/logo-mark.jpg')
+    expect(logo.closest('a')).toHaveAttribute('href', '/')
+  })
+
   it('adds and removes the scrolled class and unsubscribes on unmount', () => {
     const { container, unmount } = withProvider(<Header />)
     const header = container.querySelector('header')!
