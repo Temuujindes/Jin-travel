@@ -16,6 +16,9 @@ vi.mock('next/link', () => ({
 
 vi.mock('next/navigation', () => ({
   usePathname: () => getMockPathname(),
+  notFound: () => {
+    throw new Error('NEXT_HTTP_ERROR_FALLBACK;404')
+  },
 }))
 
 vi.mock('framer-motion', () => ({

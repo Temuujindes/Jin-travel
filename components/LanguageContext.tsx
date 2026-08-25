@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from 'react'
 import { translations } from '../lib/mock-data/translations'
 import { Language } from '../lib/types'
 
-export type TranslationKey = keyof typeof translations.en | 'gallery'
+export type TranslationKey = keyof typeof translations.en | 'gallery' | 'invalidName' | 'invalidTravelers' | 'invalidDate' | 'tourNotFound' | 'bookingFailed' | 'loadError' | 'tryAgain'
 export type Translate = (key: TranslationKey, fallback?: string) => string
 
 interface LanguageContextValue { language: Language; setLanguage: (language: Language) => void; t: Translate }

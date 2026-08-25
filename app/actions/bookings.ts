@@ -16,7 +16,7 @@ export type CreateBookingInput = {
 
 export type CreateBookingResult =
   | { success: true; referenceCode: string }
-  | { success: false; error: string }
+  | { success: false; code: 'invalidName' | 'invalidTravelers' | 'invalidDate' | 'tourNotFound' | 'bookingFailed' }
 
 function isReferenceCollision(error: unknown) {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002'
@@ -24,20 +24,20 @@ function isReferenceCollision(error: unknown) {
 
 export async function createBooking(input: CreateBookingInput): Promise<CreateBookingResult> {
   if (!input.customerName.trim() || !input.contact.trim()) {
-    return { success: false, error: 'Name and contact are required.' }
+    return { success: false, code: 'invalidName' }
   }
 
   if (!Number.isInteger(input.travelers) || input.travelers < 1) {
-    return { success: false, error: 'At least one traveler is required.' }
+    return { success: false, code: 'invalidTravelers' }
   }
 
   const startDate = new Date(`${input.startDate}T00:00:00.000Z`)
   if (!input.startDate || Number.isNaN(startDate.getTime())) {
-    return { success: false, error: 'A valid start date is required.' }
+    return { success: false, code: 'invalidDate' }
   }
 
   const tour = await prisma.tour.findUnique({ where: { id: input.tourId } })
-  if (!tour) return { success: false, error: 'The selected tour could not be found.' }
+  if (!tour) return { success: false, code: 'tourNotFound' }
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const referenceCode = `JIN-${new Date().getFullYear()}-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`
@@ -58,9 +58,9 @@ export async function createBooking(input: CreateBookingInput): Promise<CreateBo
       })
       return { success: true, referenceCode }
     } catch (error: unknown) {
-      if (!isReferenceCollision(error)) return { success: false, error: 'The booking could not be submitted.' }
+      if (!isReferenceCollision(error)) return { success: false, code: 'bookingFailed' }
     }
   }
 
-  return { success: false, error: 'The booking could not be submitted. Please try again.' }
+  return { success: false, code: 'bookingFailed' }
 }

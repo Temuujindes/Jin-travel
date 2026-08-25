@@ -6,6 +6,7 @@ import ToursError from '../app/tours/error'
 import ToursLoading from '../app/tours/loading'
 import DetailError from '../app/tours/[slug]/error'
 import DetailLoading from '../app/tours/[slug]/loading'
+import { LanguageProvider } from '../components/LanguageContext'
 
 describe('public route loading and error states', () => {
   it('uses existing layout classes for each loading state', () => {
@@ -20,10 +21,10 @@ describe('public route loading and error states', () => {
   it('renders inline recovery actions for each error state', () => {
     for (const ErrorState of [HomeError, ToursError, DetailError]) {
       const reset = vi.fn()
-      const { unmount } = render(<ErrorState error={new Error('failure')} reset={reset} />)
-      expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+      const { unmount } = render(<LanguageProvider><ErrorState error={new Error('failure')} reset={reset} /></LanguageProvider>)
+      expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument()
       expect(document.querySelector('.error')).toBeInTheDocument()
-      fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+      fireEvent.click(screen.getByRole('button', { name: '다시 시도' }))
       expect(reset).toHaveBeenCalledOnce()
       unmount()
     }

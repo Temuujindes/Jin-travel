@@ -13,7 +13,7 @@ describe('BookingFlow', () => {
   })
 
   it('changes traveler count, clamps at one, and calculates total', () => {
-    withProvider(<BookingFlow tour={fixtureTour} />)
+    withProvider(<BookingFlow tour={fixtureTour} tourId={fixtureTour.id ?? ''} />)
     expect(screen.getByText('$1160')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Add traveler' }))
     expect(screen.getByText('$1740')).toBeInTheDocument()
@@ -25,7 +25,7 @@ describe('BookingFlow', () => {
   })
 
   it('validates details before completing and shows the reference on success', async () => {
-    withProvider(<BookingFlow tour={fixtureTour} />)
+    withProvider(<BookingFlow tour={fixtureTour} tourId={fixtureTour.id ?? ''} />)
     fireEvent.change(screen.getByLabelText('출발일'), { target: { value: '2026-10-01' } })
     fireEvent.click(screen.getByRole('button', { name: '계속하기' }))
     expect(screen.getByRole('heading', { name: '고객 정보' })).toBeInTheDocument()
@@ -46,5 +46,15 @@ describe('BookingFlow', () => {
       travelers: 2,
       specialRequest: 'Window seat',
     })
+  })
+
+  it('translates server action failures in the existing error element', async () => {
+    vi.mocked(createBooking).mockResolvedValueOnce({ success: false, code: 'bookingFailed' })
+    withProvider(<BookingFlow tour={fixtureTour} tourId={fixtureTour.id ?? ''} />)
+    fireEvent.click(screen.getByRole('button', { name: '계속하기' }))
+    fireEvent.change(screen.getByLabelText('고객 이름'), { target: { value: 'Ada' } })
+    fireEvent.change(screen.getByLabelText('카카오톡 ID / 전화번호'), { target: { value: '@ada' } })
+    fireEvent.click(screen.getByRole('button', { name: '문의 보내기' }))
+    await waitFor(() => expect(document.querySelector('.error')).toHaveTextContent('예약을 접수하지 못했습니다. 다시 시도해주세요.'))
   })
 })

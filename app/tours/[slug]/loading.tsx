@@ -1,5 +1,3 @@
-// Shows the existing card and typography language while a tour detail loads.
-
 export default function Loading() {
-  return <main className="app" aria-busy="true"><div className="detail-hero" /><div className="detail-copy"><span className="badge">Loading</span><h1 className="serif">Loading journey...</h1></div></main>
+  return <main className="app" aria-busy="true"><div className="skeleton" style={{ height: '360px', borderRadius: 0 }} /><div className="detail-copy"><div className="skeleton" style={{ width: '80px', height: '12px' }} /><div className="skeleton" style={{ width: '270px', height: '34px', marginTop: '12px' }} /><div className="skeleton" style={{ width: '150px', height: '14px', marginTop: '12px' }} /></div></main>
 }

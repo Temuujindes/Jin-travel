@@ -25,14 +25,14 @@ describe('createBooking', () => {
   })
 
   it('rejects missing customer details and invalid traveler counts', async () => {
-    await expect(createBooking({ tourId: 'tour-1', customerName: '', contact: '', startDate: '2026-09-14', travelers: 1 })).resolves.toEqual({ success: false, error: 'Name and contact are required.' })
-    await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 0 })).resolves.toEqual({ success: false, error: 'At least one traveler is required.' })
-    await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: 'not-a-date', travelers: 1 })).resolves.toEqual({ success: false, error: 'A valid start date is required.' })
+    await expect(createBooking({ tourId: 'tour-1', customerName: '', contact: '', startDate: '2026-09-14', travelers: 1 })).resolves.toEqual({ success: false, code: 'invalidName' })
+    await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 0 })).resolves.toEqual({ success: false, code: 'invalidTravelers' })
+    await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: 'not-a-date', travelers: 1 })).resolves.toEqual({ success: false, code: 'invalidDate' })
   })
 
   it('rejects unknown tours', async () => {
     mocks.findUnique.mockResolvedValueOnce(null)
-    await expect(createBooking({ tourId: 'missing', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 1 })).resolves.toEqual({ success: false, error: 'The selected tour could not be found.' })
+    await expect(createBooking({ tourId: 'missing', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 1 })).resolves.toEqual({ success: false, code: 'tourNotFound' })
   })
 
   it('computes the total from the database tour price', async () => {
@@ -53,5 +53,16 @@ describe('createBooking', () => {
     mocks.create.mockRejectedValueOnce(new Prisma.PrismaClientKnownRequestError('collision', { code: 'P2002', clientVersion: '6.7.0' }))
     await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 1 })).resolves.toMatchObject({ success: true })
     expect(mocks.create).toHaveBeenCalledTimes(2)
+  })
+
+  it('returns a booking failure for non-collision database errors', async () => {
+    mocks.create.mockRejectedValueOnce(new Error('database unavailable'))
+    await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 1 })).resolves.toEqual({ success: false, code: 'bookingFailed' })
+  })
+
+  it('returns a booking failure after exhausting collision retries', async () => {
+    mocks.create.mockRejectedValue(new Prisma.PrismaClientKnownRequestError('collision', { code: 'P2002', clientVersion: '6.7.0' }))
+    await expect(createBooking({ tourId: 'tour-1', customerName: 'Ada', contact: '@ada', startDate: '2026-09-14', travelers: 1 })).resolves.toEqual({ success: false, code: 'bookingFailed' })
+    expect(mocks.create).toHaveBeenCalledTimes(5)
   })
 })

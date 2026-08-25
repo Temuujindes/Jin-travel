@@ -28,6 +28,12 @@ import BuilderPage from '../app/dashboard/tours/builder/page'
 import { AdminShell } from '../components/admin/AdminShell'
 import { withProvider } from './helpers'
 
+const wrapperMocks = vi.hoisted(() => ({
+  tourFindMany: vi.fn(),
+  tourFindUnique: vi.fn(),
+  bookingFindFirst: vi.fn(),
+}))
+
 vi.mock('../lib/db', () => {
   const tour = {
     id: 'tour-wrapper',
@@ -56,11 +62,11 @@ vi.mock('../lib/db', () => {
   return {
     prisma: {
       tour: {
-        findMany: vi.fn().mockResolvedValue([tour]),
-        findUnique: vi.fn().mockResolvedValue(tour),
+        findMany: wrapperMocks.tourFindMany.mockResolvedValue([tour]),
+        findUnique: wrapperMocks.tourFindUnique.mockResolvedValue(tour),
       },
       booking: {
-        findFirst: vi.fn().mockResolvedValue({
+        findFirst: wrapperMocks.bookingFindFirst.mockResolvedValue({
           id: 'booking-wrapper',
           tourId: tour.id,
           customerName: 'Ada',
@@ -86,7 +92,9 @@ describe('App Router page wrappers', () => {
     expect((await BookingPage()).type).toBe(MyBookingScreen)
     expect((await ToursPage()).type).toBe(ToursScreen)
     expect((await TourPage({ params: Promise.resolve({ slug: 'gobi-4d' }) })).type).toBe(TourDetailScreen)
-    expect((await TourBookingPage({ params: Promise.resolve({ slug: 'gobi-4d' }) })).type).toBe(BookingFlow)
+    const bookingRoute = await TourBookingPage({ params: Promise.resolve({ slug: 'gobi-4d' }) })
+    expect(bookingRoute.type).toBe(BookingFlow)
+    expect(bookingRoute.props.tourId).toBe('tour-wrapper')
     expect(DashboardPage().type).toBe(AdminDashboard)
     expect(AnalyticsPage().type).toBe(AnalyticsScreen)
     const inquiries = withProvider(<InquiriesPage />)
@@ -103,5 +111,19 @@ describe('App Router page wrappers', () => {
     expect(result.props.lang).toBe('ko')
     expect(result.props.children.type).toBe('body')
     expect(result.props.children.props.children.type).toBe(LanguageProvider)
+  })
+
+  it('renders the empty booking state when no booking exists', async () => {
+    wrapperMocks.bookingFindFirst.mockResolvedValueOnce(null)
+    const result = await BookingPage()
+    expect(result.props.booking).toBeNull()
+    expect(result.props.tour).toBeNull()
+  })
+
+  it('uses notFound for an unknown tour slug', async () => {
+    wrapperMocks.tourFindUnique.mockResolvedValueOnce(null)
+    await expect(TourPage({ params: Promise.resolve({ slug: 'missing' }) })).rejects.toThrow('NEXT_HTTP_ERROR_FALLBACK;404')
+    wrapperMocks.tourFindUnique.mockResolvedValueOnce(null)
+    await expect(TourBookingPage({ params: Promise.resolve({ slug: 'missing' }) })).rejects.toThrow('NEXT_HTTP_ERROR_FALLBACK;404')
   })
 })

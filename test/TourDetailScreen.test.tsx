@@ -46,4 +46,11 @@ describe('TourDetailScreen', () => {
     fireEvent.click(button)
     expect(button.querySelector('svg')).toHaveAttribute('fill', 'currentColor')
   })
+
+  it('falls back to base title and subtitle when localized values are absent', () => {
+    const fallbackTour = { ...fixtureTour, localizedTitle: {}, localizedSubtitle: {} }
+    withProvider(<TourDetailScreen tour={fallbackTour} />)
+    expect(screen.getByRole('heading', { name: fixtureTour.title })).toBeInTheDocument()
+    expect(screen.getByText(fixtureTour.subtitle)).toBeInTheDocument()
+  })
 })

@@ -8,3 +8,33 @@ export const translations: Record<Language, Record<string, string>> = {
   en: {
     home: 'Home', tours: 'Tours', booking: 'My Booking', contact: 'Contact', featured: 'Mongolia, considered', detail: 'Explore tour', book: 'Request to book', chat: 'Talk on KakaoTalk', languageSelector: 'Select language', viewAll: 'View all', curated: 'Curated journeys', makeYours: 'Make it yours', slower: 'A slower way to see the world.', gobiTours: 'Gobi tours', kakaoChat: 'Kakao chat', bookingRequest: 'Booking request', customerRating: 'Customer rating', travelers: 'Travelers welcomed', localGuides: 'Local Mongolian guides', privateJourneys: 'Private 4x4 journeys', collection: 'The collection', roomToBreathe: 'Journeys with room to breathe.', exploreTour: 'Explore tour', route: 'The route', meals: 'Meals', stay: 'Stay', back: 'Back', saveTour: 'Save tour', shareTour: 'Share tour', perPerson: '/ person', tripDetails: 'Trip details', startDate: 'Start date', continue: 'Continue', yourDetails: 'Your details', customerName: 'Customer name', kakaoId: 'KakaoTalk ID / Phone', specialRequest: 'Special request', optional: '(optional)', sendRequest: 'Send request', bookingComplete: 'Booking request complete!', managerMessage: 'A manager will contact you on KakaoTalk within 15 minutes.', reference: 'Reference', myJourney: 'Your journey', requestSubmitted: 'Request submitted', managerContact: 'Manager contact', bookingConfirmation: 'Booking confirmation', trip: 'Trip', within15: 'Within 15 minutes on KakaoTalk', responseTime: 'Response time', office: 'Office', within15Full: 'Within 15 minutes on KakaoTalk', openBuilder: 'Open builder', quickAction: 'Quick action', updateItinerary: 'Update your itinerary', editAll: 'Edit days, photos, and multilingual content in one place.', workspace: 'WORKSPACE', dashboard: 'Overview', tourPackages: 'Tour packages', itineraryBuilder: 'Itinerary Builder', inquiries: 'Inquiries', analytics: 'Analytics', workspaceOwner: 'Workspace owner', latestActivity: 'Latest activity', recentInquiries: 'Recent inquiries', allInquiries: 'All inquiries', customer: 'Customer', tour: 'Tour', date: 'Date', status: 'Status', atAGlance: 'At a glance', monthlyFocus: 'This month to watch', inquiryConversion: 'Inquiry conversion', response15: 'Response within 15 min', viewAnalytics: 'View analytics', catalog: 'Catalog', manageTours: 'Manage tour information, pricing, and publishing', addTour: 'Add new tour', searchTours: 'Search tours...', all: 'All', active: 'Active', draft: 'Draft', journeys: 'journeys', updatedRecently: 'Updated recently', makeDraft: 'Make draft', publish: 'Publish', edit: 'Edit', catalogEntry: 'Catalog entry', newTour: 'New tour', save: 'Save', cancel: 'Cancel', description: 'Description', duration: 'Duration', priceUsd: 'Price USD', mainImage: 'Main image', performance: 'Performance', businessGrowth: 'See your travel business growth in one place', yearToDate: '2026 · Year to date', lastQuarter: 'Last quarter', audience: 'Audience', trafficMarket: 'Traffic by market', demand: 'Demand', popularTours: 'Popular tours', inquiriesGrowth: 'Inquiry growth', livePreview: 'Live mobile preview', journeyEditor: 'Tour editor / Draft', editJourney: 'Customer-facing content updates instantly as you edit.', generalInfo: 'General information', dayByDay: 'Day by day', addDay: 'Add day', title: 'Title', routeLabel: 'Route', accommodation: 'Accommodation', breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner', uploadImage: 'Drag an image here', chooseImage: 'Choose image', imageLimit: 'PNG, JPG · up to 10MB', live: 'Live', korea: 'Korea', share: 'share', response: 'response' },
 }
+
+Object.assign(translations.mn, {
+  invalidName: 'Нэр болон холбоо барих мэдээллээ оруулна уу.',
+  invalidTravelers: 'Дор хаяж нэг аялагч шаардлагатай.',
+  invalidDate: 'Эхлэх өдрийг зөв оруулна уу.',
+  tourNotFound: 'Сонгосон аялал олдсонгүй.',
+  bookingFailed: 'Захиалга илгээгдсэнгүй. Дахин оролдоно уу.',
+  loadError: 'Мэдээллийг ачаалж чадсангүй.',
+  tryAgain: 'Дахин оролдох',
+})
+
+Object.assign(translations.kr, {
+  invalidName: '이름과 연락처를 입력해주세요.',
+  invalidTravelers: '여행자는 한 명 이상이어야 합니다.',
+  invalidDate: '유효한 출발일을 입력해주세요.',
+  tourNotFound: '선택한 투어를 찾을 수 없습니다.',
+  bookingFailed: '예약을 접수하지 못했습니다. 다시 시도해주세요.',
+  loadError: '정보를 불러오지 못했습니다.',
+  tryAgain: '다시 시도',
+})
+
+Object.assign(translations.en, {
+  invalidName: 'Please enter your name and contact details.',
+  invalidTravelers: 'At least one traveler is required.',
+  invalidDate: 'Please enter a valid start date.',
+  tourNotFound: 'The selected tour could not be found.',
+  bookingFailed: 'The booking could not be submitted. Please try again.',
+  loadError: 'We could not load this information.',
+  tryAgain: 'Try again',
+})

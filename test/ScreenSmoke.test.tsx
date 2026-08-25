@@ -17,6 +17,12 @@ describe('screen smoke coverage', () => {
     expect(hero.style.backgroundImage).toContain('photo-1509316785289')
   })
 
+  it('renders the home collection without a featured hero', () => {
+    const { container } = withProvider(<HomeScreen tours={[]} />)
+    expect(container.querySelector('.hero')).not.toBeInTheDocument()
+    expect(container.querySelectorAll('.tour-card')).toHaveLength(0)
+  })
+
   it('uses localized values when present and falls back when absent', () => {
     const localizedTour = { ...fixtureTour, localizedTitle: { kr: '현지화된 투어' }, localizedSubtitle: { kr: '현지화된 설명' } }
 

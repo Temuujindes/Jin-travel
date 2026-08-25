@@ -2,6 +2,9 @@
 
 // Displays a recoverable inline error for tour detail failures.
 
+import { useTranslation } from '../../../components/LanguageContext'
+
 export default function Error({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  return <main className="app"><div className="form-page"><p className="error">Something went wrong while loading this tour.</p><button className="primary full" onClick={() => reset()}>Try again</button></div></main>
+  const { t } = useTranslation()
+  return <main className="app"><div className="form-page"><p className="error">{t('loadError')}</p><button className="primary full" onClick={() => reset()}>{t('tryAgain')}</button></div></main>
 }

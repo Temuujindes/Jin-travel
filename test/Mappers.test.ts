@@ -26,6 +26,27 @@ describe('display mappers', () => {
       meals: ['Breakfast', 'Dinner'],
       descriptions: { mn: 'MN', kr: 'KR', en: 'EN' },
     })
+
+    const alternateDay = toDisplayDay({
+      id: 'day-2',
+      tourId: 'tour-1',
+      dayNumber: 3,
+      titleMn: 'Өдөр 3',
+      titleKr: '3일',
+      titleEn: 'Day 3',
+      route: null,
+      breakfast: false,
+      lunch: true,
+      dinner: false,
+      accommodation: 'Ger camp',
+      activities: [],
+      descriptionMn: 'MN',
+      descriptionKr: 'KR',
+      descriptionEn: 'EN',
+      image: 'day-image',
+    })
+    expect(alternateDay.meals).toEqual(['Lunch'])
+    expect(alternateDay.distance).toBeUndefined()
   })
 
   it('maps tours with and without included itinerary days', () => {
@@ -54,6 +75,27 @@ describe('display mappers', () => {
     }
     expect(toDisplayTour(row).itinerary).toEqual([])
     expect(toDisplayTour({ ...row, itineraryDays: [] }).localizedTitle).toEqual({ mn: 'Монгол', kr: '몽골', en: 'Mongolia' })
+    expect(toDisplayTour({
+      ...row,
+      itineraryDays: [{
+        id: 'day-1',
+        tourId: row.id,
+        dayNumber: 1,
+        titleMn: 'Өдөр 1',
+        titleKr: '1일',
+        titleEn: 'Day 1',
+        route: null,
+        breakfast: true,
+        lunch: true,
+        dinner: true,
+        accommodation: 'Ger camp',
+        activities: ['Walk'],
+        descriptionMn: 'MN',
+        descriptionKr: 'KR',
+        descriptionEn: 'EN',
+        image: 'day',
+      }],
+    }).itinerary).toHaveLength(1)
   })
 
   it('formats a booking start date for the existing booking display', () => {

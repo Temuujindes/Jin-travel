@@ -9,5 +9,5 @@ export default async function BookingPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params
   const row = await prisma.tour.findUnique({ where: { slug } })
   if (!row) notFound()
-  return <BookingFlow tour={toDisplayTour(row)} />
+  return <BookingFlow tour={toDisplayTour(row)} tourId={row.id} />
 }
