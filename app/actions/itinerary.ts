@@ -42,6 +42,8 @@ export async function saveItinerary(tour: Tour): Promise<SaveItineraryResult> {
     })
     revalidatePath(`/dashboard/tours/builder?tour=${tour.slug}`)
     revalidatePath(`/dashboard/tours/builder`)
+    revalidatePath('/tours')
+    revalidatePath('/')
     revalidatePath(`/tours/${tour.slug}`)
     return { success: true }
   } catch (error: unknown) {

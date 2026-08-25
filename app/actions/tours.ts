@@ -58,6 +58,7 @@ export async function createTour(input: CreateTourInput): Promise<CreateTourResu
     })
     revalidatePath('/dashboard/tours')
     revalidatePath('/tours')
+    revalidatePath('/')
     return { success: true, tourId: tour.id }
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -73,6 +74,7 @@ export async function setTourStatus(id: string, status: 'active' | 'draft'): Pro
     await prisma.tour.update({ where: { id }, data: { status } })
     revalidatePath('/dashboard/tours')
     revalidatePath('/tours')
+    revalidatePath('/')
     return { success: true }
   } catch (error: unknown) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
