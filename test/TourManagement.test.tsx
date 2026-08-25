@@ -43,4 +43,27 @@ describe('TourManagement', () => {
     fireEvent.click(screen.getAllByRole('button', { name: '취소' }).at(-1)!)
     expect(container.querySelector('.admin-dialog')).not.toBeInTheDocument()
   })
+
+  it('uses create-form defaults when optional fields are blank', () => {
+    const { container } = withProvider(<TourManagement />)
+    fireEvent.click(screen.getByRole('button', { name: '새 투어 추가' }))
+    fireEvent.change(screen.getByRole('textbox', { name: /제목 MN/ }), { target: { value: 'Defaults Tour' } })
+    fireEvent.change(screen.getByRole('spinbutton', { name: /USD 가격/ }), { target: { value: '' } })
+    fireEvent.click(container.querySelector('.dialog-heading button')!)
+    expect(container.querySelector('.admin-dialog')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '새 투어 추가' }))
+    fireEvent.change(screen.getByRole('textbox', { name: /제목 MN/ }), { target: { value: 'Defaults Tour' } })
+    fireEvent.click(screen.getByRole('button', { name: '저장' }))
+    expect(screen.getByText('Defaults Tour')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '전체' }))
+  })
+
+  it('toggles active and draft status from each row action', () => {
+    const { container } = withProvider(<TourManagement />)
+    fireEvent.click(screen.getAllByRole('button', { name: '초안으로 변경' })[0])
+    expect(container.querySelectorAll('.admin-tour-status.draft')).toHaveLength(2)
+    fireEvent.click(screen.getAllByRole('button', { name: '게시' })[0])
+    fireEvent.click(screen.getAllByRole('button', { name: '게시' })[0])
+    expect(container.querySelectorAll('.admin-tour-status.active')).toHaveLength(3)
+  })
 })

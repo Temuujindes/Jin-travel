@@ -1,5 +1,6 @@
 import { fireEvent, screen } from '@testing-library/react'
-import { Header, BottomNav } from '../components/AppShell'
+import { BottomNav, Header, Shell } from '../components/AppShell'
+import { LanguageProvider } from '../components/LanguageContext'
 import { withProvider } from './helpers'
 import { setMockPathname } from './navigation'
 
@@ -36,5 +37,13 @@ describe('AppShell navigation', () => {
     withProvider(<BottomNav t={(key) => key === 'home' ? 'Provided home' : `provided ${key}`} />)
     expect(screen.getByRole('link', { name: 'provided tours' })).toHaveClass('active')
     expect(screen.getByRole('link', { name: 'Provided home' })).toBeInTheDocument()
+  })
+
+  it('renders children with the optional booking bar', () => {
+    const { rerender } = withProvider(<Shell><p>Content</p></Shell>)
+    expect(screen.getByText('Content')).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /계속하기|예약 신청/ })).not.toBeInTheDocument()
+    rerender(<LanguageProvider><Shell bookingBar><p>Content</p></Shell></LanguageProvider>)
+    expect(screen.getByRole('link', { name: /예약 신청/ })).toBeInTheDocument()
   })
 })

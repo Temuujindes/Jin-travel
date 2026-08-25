@@ -10,7 +10,8 @@
     "skipLibCheck": true,
     "strict": true,
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "node"
     ],
     "noEmit": true,
     "esModuleInterop": true,

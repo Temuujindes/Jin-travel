@@ -13,7 +13,6 @@ describe('AdminShell', () => {
     setMockPathname('/dashboard')
     withProvider(<AdminShell><p>Content</p></AdminShell>)
     expect(screen.getByRole('link', { name: /대시보드/ })).toHaveClass('active')
-    expect(container).toBeTruthy()
   })
 
   it('opens and closes the mobile drawer with menu, close, and overlay controls', () => {
@@ -27,5 +26,10 @@ describe('AdminShell', () => {
     fireEvent.click(screen.getByRole('button', { name: '대시보드' }))
     fireEvent.click(container.querySelector('.admin-overlay')!)
     expect(sidebar).not.toHaveClass('is-open')
+    fireEvent.click(screen.getByRole('button', { name: 'EN' }))
+    expect(screen.getByRole('button', { name: 'EN' })).toHaveClass('active')
+    const toursLink = screen.getByRole('link', { name: /Tour packages/ })
+    toursLink.addEventListener('click', (event) => event.preventDefault(), { once: true })
+    fireEvent.click(toursLink)
   })
 })
