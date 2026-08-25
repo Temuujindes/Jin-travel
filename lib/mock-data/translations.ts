@@ -25,6 +25,15 @@ Object.assign(translations.mn, {
   createFailed: 'Аяллыг үүсгэж чадсангүй. Дахин оролдоно уу.',
   saveFailed: 'Аяллын хөтөлбөрийг хадгалж чадсангүй. Дахин оролдоно уу.',
   statusUpdateFailed: 'Төлөвийг шинэчилж чадсангүй. Дахин оролдоно уу.',
+  unauthorized: 'Админ сесс дууссан байна. Дахин нэвтэрнэ үү.',
+  adminLoginTitle: 'Тавтай морилно уу',
+  adminLoginDescription: 'Аяллуудаа удирдахын тулд нэвтэрнэ үү.',
+  email: 'Имэйл',
+  password: 'Нууц үг',
+  signIn: 'Нэвтрэх',
+  signingIn: 'Нэвтэрч байна...',
+  invalidCredentials: 'Имэйл эсвэл нууц үг буруу байна.',
+  logout: 'Гарах',
 })
 
 Object.assign(translations.kr, {
@@ -43,6 +52,15 @@ Object.assign(translations.kr, {
   createFailed: '투어를 만들지 못했습니다. 다시 시도해주세요.',
   saveFailed: '일정을 저장하지 못했습니다. 다시 시도해주세요.',
   statusUpdateFailed: '상태를 변경하지 못했습니다. 다시 시도해주세요.',
+  unauthorized: '관리자 세션이 만료되었습니다. 다시 로그인해주세요.',
+  adminLoginTitle: '다시 오신 것을 환영합니다',
+  adminLoginDescription: '여행을 관리하려면 로그인해주세요.',
+  email: '이메일',
+  password: '비밀번호',
+  signIn: '로그인',
+  signingIn: '로그인 중...',
+  invalidCredentials: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  logout: '로그아웃',
 })
 
 Object.assign(translations.en, {
@@ -61,4 +79,13 @@ Object.assign(translations.en, {
   createFailed: 'The tour could not be created. Please try again.',
   saveFailed: 'The itinerary could not be saved. Please try again.',
   statusUpdateFailed: 'The tour status could not be updated. Please try again.',
+  unauthorized: 'Your admin session has expired. Please sign in again.',
+  adminLoginTitle: 'Welcome back',
+  adminLoginDescription: 'Sign in to manage your journeys.',
+  email: 'Email',
+  password: 'Password',
+  signIn: 'Sign in',
+  signingIn: 'Signing in...',
+  invalidCredentials: 'The email or password is incorrect.',
+  logout: 'Sign out',
 })

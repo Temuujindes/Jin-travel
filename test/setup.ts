@@ -5,6 +5,7 @@ import { afterEach, vi } from 'vitest'
 import { getMockPathname } from './navigation'
 
 afterEach(() => cleanup())
+process.env.NEXTAUTH_SECRET ||= 'test-secret'
 
 vi.mock('next/image', () => ({
   default: ({ fill: _fill, priority: _priority, sizes: _sizes, quality: _quality, placeholder: _placeholder, blurDataURL: _blurDataURL, ...props }: Record<string, unknown>) =>

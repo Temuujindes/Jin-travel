@@ -4,16 +4,17 @@
 
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { getAdminSession } from '../../lib/auth'
 import { prisma } from '../../lib/db'
 import { toPrismaDayInput } from '../../lib/mappers'
 import type { Tour } from '../../lib/types'
 
 export type SaveItineraryResult =
   | { success: true }
-  | { success: false; code: 'tourNotFound' | 'saveFailed' }
+  | { success: false; code: 'unauthorized' | 'tourNotFound' | 'saveFailed' }
 
 export async function saveItinerary(tour: Tour): Promise<SaveItineraryResult> {
-  // TODO: Require a server-side session once admin authentication is added.
+  if (!(await getAdminSession())?.user?.email) return { success: false, code: 'unauthorized' }
   if (!tour.id || !tour.title.trim()) return { success: false, code: 'tourNotFound' }
   const title = tour.title.trim()
   const subtitle = tour.subtitle.trim()

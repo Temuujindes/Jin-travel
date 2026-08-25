@@ -10,9 +10,11 @@ const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   deleteMany: vi.fn(),
   createMany: vi.fn(),
+  session: vi.fn(),
 }))
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+vi.mock('../lib/auth', () => ({ getAdminSession: mocks.session }))
 vi.mock('../lib/db', () => ({
   prisma: {
     tour: { create: mocks.create, update: mocks.update },
@@ -23,6 +25,7 @@ vi.mock('../lib/db', () => ({
 describe('admin server actions', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.session.mockResolvedValue({ user: { email: 'admin@jintravel.local' } })
     mocks.create.mockResolvedValue({ id: 'new-tour' })
     mocks.update.mockResolvedValue({ id: 'tour-1' })
     mocks.transaction.mockImplementation(async (callback: (transaction: unknown) => Promise<void>) => callback({ tour: { update: mocks.update }, itineraryDay: { deleteMany: mocks.deleteMany, createMany: mocks.createMany } }))
@@ -79,5 +82,15 @@ describe('admin server actions', () => {
     await expect(saveItinerary(fixtureTour)).resolves.toEqual({ success: false, code: 'tourNotFound' })
     mocks.transaction.mockRejectedValueOnce(new Error('offline'))
     await expect(saveItinerary(fixtureTour)).resolves.toEqual({ success: false, code: 'saveFailed' })
+  })
+
+  it('rejects unauthenticated writes for every admin action', async () => {
+    mocks.session.mockResolvedValue(null)
+    await expect(createTour({ title: 'Blocked', description: '', duration: '', price: 1, image: '' })).resolves.toEqual({ success: false, code: 'unauthorized' })
+    await expect(setTourStatus('tour-1', 'draft')).resolves.toEqual({ success: false, code: 'unauthorized' })
+    await expect(saveItinerary(fixtureTour)).resolves.toEqual({ success: false, code: 'unauthorized' })
+    expect(mocks.create).not.toHaveBeenCalled()
+    expect(mocks.update).not.toHaveBeenCalled()
+    expect(mocks.transaction).not.toHaveBeenCalled()
   })
 })

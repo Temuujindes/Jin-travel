@@ -4,6 +4,7 @@
 
 import { Prisma, TourStatus } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
+import { getAdminSession } from '../../lib/auth'
 import { prisma } from '../../lib/db'
 
 export type CreateTourInput = {
@@ -16,18 +17,18 @@ export type CreateTourInput = {
 
 export type CreateTourResult =
   | { success: true; tourId: string }
-  | { success: false; code: 'duplicateSlug' | 'invalidTitle' | 'invalidPrice' | 'createFailed' }
+  | { success: false; code: 'unauthorized' | 'duplicateSlug' | 'invalidTitle' | 'invalidPrice' | 'createFailed' }
 
 export type SetTourStatusResult =
   | { success: true }
-  | { success: false; code: 'tourNotFound' | 'statusUpdateFailed' }
+  | { success: false; code: 'unauthorized' | 'tourNotFound' | 'statusUpdateFailed' }
 
 function slugify(title: string) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
 export async function createTour(input: CreateTourInput): Promise<CreateTourResult> {
-  // TODO: Require a server-side session once admin authentication is added.
+  if (!(await getAdminSession())?.user?.email) return { success: false, code: 'unauthorized' }
   const title = input.title.trim()
   if (!title) return { success: false, code: 'invalidTitle' }
   if (!Number.isFinite(input.price) || input.price < 0) return { success: false, code: 'invalidPrice' }
@@ -67,7 +68,7 @@ export async function createTour(input: CreateTourInput): Promise<CreateTourResu
 }
 
 export async function setTourStatus(id: string, status: 'active' | 'draft'): Promise<SetTourStatusResult> {
-  // TODO: Require a server-side session once admin authentication is added.
+  if (!(await getAdminSession())?.user?.email) return { success: false, code: 'unauthorized' }
   try {
     await prisma.tour.update({ where: { id }, data: { status } })
     revalidatePath('/dashboard/tours')
