@@ -17,11 +17,35 @@ describe('AppShell navigation', () => {
     expect(mn).not.toHaveClass('active')
   })
 
+  it('opens and closes the mobile navigation menu', () => {
+    withProvider(<Header />)
+    const menu = screen.getByRole('button', { name: '메뉴' })
+    expect(menu).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(menu)
+    expect(menu).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toHaveClass('is-open')
+    fireEvent.click(menu)
+    expect(menu).toHaveAttribute('aria-expanded', 'false')
+  })
+
   it('links the brand logo home', () => {
     withProvider(<Header />)
     const logo = screen.getByAltText('JIN Travel Mongolia')
     expect(logo).toHaveAttribute('src', '/logo-mark.jpg')
     expect(logo.closest('a')).toHaveAttribute('href', '/')
+  })
+
+  it('uses the hero header treatment only on hero pages', () => {
+    const { container, unmount } = withProvider(<Header />)
+    expect(container.querySelector('header')).toHaveClass('hero-topbar')
+    unmount()
+    setMockPathname('/contact')
+    const nonHero = withProvider(<Header />)
+    expect(nonHero.container.querySelector('header')).not.toHaveClass('hero-topbar')
+    nonHero.unmount()
+    setMockPathname('/tours/gobi-4d')
+    const detail = withProvider(<Header />)
+    expect(detail.container.querySelector('header')).toHaveClass('hero-topbar')
   })
 
   it('adds and removes the scrolled class and unsubscribes on unmount', () => {

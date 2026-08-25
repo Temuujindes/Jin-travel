@@ -107,3 +107,21 @@ Object.assign(translations.en, {
   noAnalyticsData: 'There is no data to display yet.',
   noBooking: 'You do not have a booking yet.',
 })
+
+Object.assign(translations.mn, {
+  myBooking: 'Миний захиалга',
+  footerTagline: 'Монголын уудам нутгийг өөрийн хэмнэлээр аялцгаая.',
+  allRightsReserved: 'Бүх эрх хуулиар хамгаалагдсан.',
+})
+
+Object.assign(translations.kr, {
+  myBooking: '내 예약',
+  footerTagline: '몽골의 광활한 풍경을 나만의 속도로 여행하세요.',
+  allRightsReserved: 'All rights reserved.',
+})
+
+Object.assign(translations.en, {
+  myBooking: 'My Booking',
+  footerTagline: 'Explore the wide-open spaces of Mongolia at your own pace.',
+  allRightsReserved: 'All rights reserved.',
+})

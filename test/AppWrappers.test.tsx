@@ -137,7 +137,9 @@ describe('App Router page wrappers', () => {
     wrapperMocks.tourFindFirst.mockResolvedValueOnce(null)
     const emptyBuilder = await BuilderPage({ searchParams: Promise.resolve({}) })
     expect(emptyBuilder.props.initialTour).toMatchObject({ id: '', itinerary: [] })
-    expect(DashboardLayout({ children: <span /> })).toEqual(<span />)
+    const dashboardLayout = DashboardLayout({ children: <span /> })
+    expect(dashboardLayout.type).toBe(LanguageProvider)
+    expect(dashboardLayout.props.defaultLanguage).toBe('mn')
   })
 
   it('wraps children in the root language provider and document shell', () => {

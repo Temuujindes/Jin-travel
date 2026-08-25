@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import HomeScreen from '../components/HomeScreen'
 import ToursScreen from '../components/ToursScreen'
 import MyBookingScreen from '../components/MyBookingScreen'
@@ -30,33 +30,39 @@ describe('screen smoke coverage', () => {
     expect(container.querySelectorAll('.tour-card')).toHaveLength(0)
   })
 
+  it('renders a zero-tour summary without price data', () => {
+    const { container } = withProvider(<ToursScreen tours={[]} />)
+    expect(container.querySelector('.tour-summary')).toHaveTextContent('$0 – $0')
+  })
+
   it('uses localized values when present and falls back when absent', () => {
     const localizedTour = { ...fixtureTour, localizedTitle: { kr: '현지화된 투어' }, localizedSubtitle: { kr: '현지화된 설명' } }
 
     const toursView = withProvider(<ToursScreen tours={[localizedTour]} />)
     expect(screen.getByRole('heading', { name: '현지화된 투어' })).toBeInTheDocument()
     expect(screen.getByText('현지화된 설명')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'EN' }))
+    fireEvent.click(within(toursView.container.querySelector('.topbar')!).getByRole('button', { name: 'EN' }))
     expect(screen.getByRole('heading', { name: localizedTour.title })).toBeInTheDocument()
     toursView.unmount()
 
     const bookingView = withProvider(<MyBookingScreen booking={fixtureBooking} tour={localizedTour} />)
     expect(screen.getByRole('heading', { name: '현지화된 투어' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'EN' }))
+    fireEvent.click(within(bookingView.container.querySelector('.topbar')!).getByRole('button', { name: 'EN' }))
     expect(screen.getByRole('heading', { name: localizedTour.title })).toBeInTheDocument()
     bookingView.unmount()
 
-    withProvider(<HomeScreen tours={[localizedTour]} featuredTour={localizedTour} />)
+    const homeView = withProvider(<HomeScreen tours={[localizedTour]} featuredTour={localizedTour} />)
     expect(screen.getByText('현지화된 설명')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'EN' }))
+    fireEvent.click(within(homeView.container.querySelector('.topbar')!).getByRole('button', { name: 'EN' }))
     expect(screen.getByText(localizedTour.subtitle)).toBeInTheDocument()
   })
 
   it('renders and localizes every tour card', () => {
     const tours = [fixtureTour, { ...fixtureTour, slug: 'gobi-ultimate-6d' }, { ...fixtureTour, slug: 'khuvsgul-3d' }]
-    const { container } = withProvider(<ToursScreen tours={tours} />)
+    const toursView = withProvider(<ToursScreen tours={tours} />)
+    const { container } = toursView
     expect(container.querySelectorAll('.tour-card')).toHaveLength(3)
-    fireEvent.click(screen.getByRole('button', { name: 'EN' }))
+    fireEvent.click(within(toursView.container.querySelector('.topbar')!).getByRole('button', { name: 'EN' }))
     expect(screen.getAllByText('4-Day Gobi Express & Camel Trekking')).toHaveLength(3)
   })
 
@@ -81,7 +87,7 @@ describe('screen smoke coverage', () => {
     expect(screen.getByText('JIN-2026-08421')).toBeInTheDocument()
     booking.unmount()
     const contact = withProvider(<ContactScreen />)
-    expect(screen.getByText('hello@jintravel.mn')).toBeInTheDocument()
+    expect(screen.getAllByText('hello@jintravel.mn')).toHaveLength(2)
     contact.unmount()
     const dashboard = withProvider(<AdminDashboard metrics={{ totalBookings: 3, monthlyBookings: 1, revenue: 580, activeTours: 2, bookingTrend: '+100%', revenueTrend: '+100%', tourTrend: '+1' }} inquiryConversion={67} inquiries={[]} />)
     expect(screen.getByRole('heading', { name: '대시보드' })).toBeInTheDocument()
