@@ -3,6 +3,7 @@ import HomeScreen from '../components/HomeScreen'
 import ToursScreen from '../components/ToursScreen'
 import MyBookingScreen from '../components/MyBookingScreen'
 import ContactScreen from '../components/ContactScreen'
+import TourDetailScreen from '../components/TourDetailScreen'
 import AdminDashboard from '../components/admin/AdminDashboard'
 import ItineraryBuilder from '../components/admin/ItineraryBuilder'
 import { fixtureBooking, fixtureTour } from './fixtures'
@@ -59,6 +60,22 @@ describe('screen smoke coverage', () => {
     expect(screen.getAllByText('4-Day Gobi Express & Camel Trekking')).toHaveLength(3)
   })
 
+  it('omits empty badges and MNT prices from public tour cards and details', () => {
+    const metadataFreeTour = { ...fixtureTour, badge: '', priceMnt: '' }
+    const home = withProvider(<HomeScreen tours={[metadataFreeTour]} featuredTour={metadataFreeTour} />)
+    expect(home.container.querySelector('.tour-card .badge')).not.toBeInTheDocument()
+    expect(home.container.querySelector('.tour-card .price small')).not.toBeInTheDocument()
+    home.unmount()
+
+    const tours = withProvider(<ToursScreen tours={[metadataFreeTour]} />)
+    expect(tours.container.querySelector('.tour-card .badge')).not.toBeInTheDocument()
+    expect(tours.container.querySelector('.tour-card .price small')).not.toBeInTheDocument()
+    tours.unmount()
+
+    const detail = withProvider(<TourDetailScreen tour={metadataFreeTour} />)
+    expect(detail.container.querySelector('.detail-copy .badge')).not.toBeInTheDocument()
+  })
+
   it('renders booking, contact, dashboard, and builder screens', () => {
     const booking = withProvider(<MyBookingScreen booking={fixtureBooking} tour={fixtureTour} />)
     expect(screen.getByText('JIN-2026-08421')).toBeInTheDocument()
@@ -66,8 +83,12 @@ describe('screen smoke coverage', () => {
     const contact = withProvider(<ContactScreen />)
     expect(screen.getByText('hello@jintravel.mn')).toBeInTheDocument()
     contact.unmount()
-    const dashboard = withProvider(<AdminDashboard metrics={{ totalBookings: 3, monthlyBookings: 1, revenue: 580, activeTours: 2, bookingTrend: '+100%', revenueTrend: '+100%', tourTrend: '+1' }} inquiries={[]} />)
+    const dashboard = withProvider(<AdminDashboard metrics={{ totalBookings: 3, monthlyBookings: 1, revenue: 580, activeTours: 2, bookingTrend: '+100%', revenueTrend: '+100%', tourTrend: '+1' }} inquiryConversion={67} inquiries={[]} />)
     expect(screen.getByRole('heading', { name: '대시보드' })).toBeInTheDocument()
+    expect(dashboard.container.querySelector('.kpi-card small')).toHaveTextContent('—')
+    expect(dashboard.container.querySelectorAll('.kpi-card')[1]).toHaveTextContent('+100%')
+    expect(dashboard.container.querySelector('.progress i')).toHaveStyle({ width: '67%' })
+    expect(screen.getByText('67%')).toBeInTheDocument()
     dashboard.unmount()
     withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
     expect(screen.getByRole('heading', { name: /수정 사항은 고객 화면에 즉시 반영/ })).toBeInTheDocument()

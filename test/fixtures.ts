@@ -24,6 +24,7 @@ export const fixtureTour: Tour = {
     {
       day: 1,
       title: 'UB → Dalanzadgad → Yolyn Am',
+      localizedTitle: { mn: 'ӨБ → Даланзадгад → Ёлын ам', kr: '울란바토르 → 달란자드가드 → 욜린 암', en: 'UB → Dalanzadgad → Yolyn Am' },
       distance: '~45 km, ~1 hr',
       meals: ['Lunch', 'Dinner'],
       accommodation: 'Ger camp',

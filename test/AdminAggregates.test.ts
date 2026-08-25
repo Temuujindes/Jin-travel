@@ -1,10 +1,15 @@
-import { calculateDashboardMetrics, buildInquiryGrowth, formatTrend } from '../lib/admin-aggregates'
+import { calculateDashboardMetrics, buildInquiryGrowth, calculateInquiryConversion, formatTrend } from '../lib/admin-aggregates'
 
 describe('admin aggregate calculations', () => {
   it('formats neutral, positive, and negative trends', () => {
     expect(formatTrend(2, 0)).toBe('—')
     expect(formatTrend(3, 2)).toBe('+50%')
     expect(formatTrend(1, 2)).toBe('-50%')
+  })
+
+  it('calculates confirmed booking conversion and handles empty bookings', () => {
+    expect(calculateInquiryConversion([])).toBe(0)
+    expect(calculateInquiryConversion([{ status: 'Баталгаажсан' }, { status: 'Шинэ' }, { status: 'Баталгаажсан' }])).toBe(67)
   })
 
   it('calculates dashboard KPIs and honest trends', () => {

@@ -27,6 +27,7 @@ function slugify(title: string) {
 }
 
 export async function createTour(input: CreateTourInput): Promise<CreateTourResult> {
+  // TODO: Require a server-side session once admin authentication is added.
   const title = input.title.trim()
   if (!title) return { success: false, code: 'invalidTitle' }
   if (!Number.isFinite(input.price) || input.price < 0) return { success: false, code: 'invalidPrice' }
@@ -66,6 +67,7 @@ export async function createTour(input: CreateTourInput): Promise<CreateTourResu
 }
 
 export async function setTourStatus(id: string, status: 'active' | 'draft'): Promise<SetTourStatusResult> {
+  // TODO: Require a server-side session once admin authentication is added.
   try {
     await prisma.tour.update({ where: { id }, data: { status } })
     revalidatePath('/dashboard/tours')

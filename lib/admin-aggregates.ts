@@ -20,6 +20,12 @@ export function formatTrend(current: number, previous: number) {
   return `${percent >= 0 ? '+' : ''}${percent}%`
 }
 
+export function calculateInquiryConversion(bookings: { status: string }[]) {
+  if (bookings.length === 0) return 0
+  const confirmed = bookings.filter((booking) => booking.status === 'Баталгаажсан').length
+  return Math.round((confirmed / bookings.length) * 100)
+}
+
 export function calculateDashboardMetrics(bookings: BookingAggregate[], tours: TourAggregate[], now = new Date()): DashboardMetrics {
   const currentMonth = monthKey(now)
   const previousMonth = previousMonthKey(now)

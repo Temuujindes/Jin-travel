@@ -13,18 +13,23 @@ export type SaveItineraryResult =
   | { success: false; code: 'tourNotFound' | 'saveFailed' }
 
 export async function saveItinerary(tour: Tour): Promise<SaveItineraryResult> {
+  // TODO: Require a server-side session once admin authentication is added.
   if (!tour.id || !tour.title.trim()) return { success: false, code: 'tourNotFound' }
+  const title = tour.title.trim()
+  const subtitle = tour.subtitle.trim()
+  const localizedTitle = tour.localizedTitle
+  const localizedSubtitle = tour.localizedSubtitle
   try {
     await prisma.$transaction(async (transaction) => {
       await transaction.tour.update({
         where: { id: tour.id },
         data: {
-          titleMn: tour.title.trim(),
-          titleKr: tour.title.trim(),
-          titleEn: tour.title.trim(),
-          subtitleMn: tour.subtitle.trim(),
-          subtitleKr: tour.subtitle.trim(),
-          subtitleEn: tour.subtitle.trim(),
+          titleMn: localizedTitle?.mn || title,
+          titleKr: localizedTitle?.kr || title,
+          titleEn: title,
+          subtitleMn: localizedSubtitle?.mn || subtitle,
+          subtitleKr: localizedSubtitle?.kr || subtitle,
+          subtitleEn: subtitle,
           duration: tour.duration.trim(),
           priceUsd: tour.priceUsd,
         },

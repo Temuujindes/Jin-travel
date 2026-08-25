@@ -22,6 +22,7 @@ describe('display mappers', () => {
     })
     expect(day).toMatchObject({
       day: 2,
+      localizedTitle: { mn: 'Өдөр 2', kr: '2일', en: 'Day 2' },
       distance: '~180–200 km, ~4–5 hrs',
       meals: ['Breakfast', 'Dinner'],
       descriptions: { mn: 'MN', kr: 'KR', en: 'EN' },
@@ -174,5 +175,56 @@ describe('display mappers', () => {
       activities: [],
       image: '',
     })).toMatchObject({ descriptionMn: '', descriptionKr: '', descriptionEn: '' })
+  })
+
+  it('preserves localized tour and itinerary titles through the display round trip', () => {
+    const row = {
+      id: 'tour-2',
+      slug: 'tour-2',
+      titleMn: 'Монгол аялал',
+      titleKr: '몽골 여행',
+      titleEn: 'Mongolia tour',
+      subtitleMn: 'Монгол тайлбар',
+      subtitleKr: '몽골 설명',
+      subtitleEn: 'Mongolia description',
+      badge: '',
+      duration: '2 days',
+      priceUsd: 100,
+      priceMnt: '',
+      rating: 0,
+      reviews: 0,
+      tags: [],
+      mainImage: 'main',
+      gallery: ['main'],
+      status: 'draft' as const,
+      featured: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      itineraryDays: [{
+        id: 'day-2',
+        tourId: 'tour-2',
+        dayNumber: 1,
+        titleMn: 'Өдөр нэг',
+        titleKr: '첫째 날',
+        titleEn: 'Day one',
+        route: null,
+        breakfast: false,
+        lunch: false,
+        dinner: false,
+        accommodation: 'Ger',
+        activities: [],
+        descriptionMn: '',
+        descriptionKr: '',
+        descriptionEn: '',
+        image: 'day',
+      }],
+    }
+    const tour = toDisplayTour(row)
+    expect(tour.localizedTitle).toEqual({ mn: 'Монгол аялал', kr: '몽골 여행', en: 'Mongolia tour' })
+    expect(toPrismaDayInput(tour.itinerary[0])).toMatchObject({
+      titleMn: 'Өдөр нэг',
+      titleKr: '첫째 날',
+      titleEn: 'Day one',
+    })
   })
 })

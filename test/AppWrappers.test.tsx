@@ -122,7 +122,7 @@ describe('App Router page wrappers', () => {
     expect(bookingRoute.type).toBe(BookingFlow)
     expect(bookingRoute.props.tourId).toBe('tour-wrapper')
     expect((await DashboardPage()).type).toBe(AdminDashboard)
-    wrapperMocks.bookingAggregate.mockResolvedValueOnce({ _sum: { totalPrice: null } })
+    wrapperMocks.bookingFindMany.mockResolvedValueOnce([])
     const zeroRevenueDashboard = await DashboardPage()
     expect(zeroRevenueDashboard.props.metrics.revenue).toBe(0)
     expect((await AnalyticsPage()).type).toBe(AnalyticsScreen)

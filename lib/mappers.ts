@@ -22,6 +22,11 @@ export function toDisplayDay(row: ItineraryDayRow): ItineraryDay {
   return {
     day: row.dayNumber,
     title: row.titleEn,
+    localizedTitle: {
+      mn: row.titleMn,
+      kr: row.titleKr,
+      en: row.titleEn,
+    },
     distance: row.route ?? undefined,
     meals,
     accommodation: row.accommodation,
@@ -105,11 +110,12 @@ export function toDisplayInquiry(row: BookingWithTourTitle): Inquiry {
 }
 
 export function toPrismaDayInput(day: ItineraryDay): Prisma.ItineraryDayCreateWithoutTourInput {
+  const title = day.title
   return {
     dayNumber: day.day,
-    titleMn: day.title,
-    titleKr: day.title,
-    titleEn: day.title,
+    titleMn: day.localizedTitle?.mn || title,
+    titleKr: day.localizedTitle?.kr || title,
+    titleEn: title,
     route: day.distance ?? null,
     breakfast: day.meals.includes('Breakfast'),
     lunch: day.meals.includes('Lunch'),

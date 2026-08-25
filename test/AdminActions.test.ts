@@ -53,9 +53,24 @@ describe('admin server actions', () => {
 
   it('saves general fields and replaces itinerary in one transaction', async () => {
     await expect(saveItinerary(fixtureTour)).resolves.toEqual({ success: true })
-    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: fixtureTour.id }, data: expect.objectContaining({ titleMn: fixtureTour.title, priceUsd: fixtureTour.priceUsd }) }))
+    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ where: { id: fixtureTour.id }, data: expect.objectContaining({ titleMn: fixtureTour.localizedTitle?.mn, titleKr: fixtureTour.localizedTitle?.kr, titleEn: fixtureTour.localizedTitle?.en, subtitleMn: fixtureTour.localizedSubtitle?.mn ?? fixtureTour.subtitle, subtitleKr: fixtureTour.localizedSubtitle?.kr ?? fixtureTour.subtitle, subtitleEn: fixtureTour.localizedSubtitle?.en ?? fixtureTour.subtitle, priceUsd: fixtureTour.priceUsd }) }))
     expect(mocks.deleteMany).toHaveBeenCalledWith({ where: { tourId: fixtureTour.id } })
-    expect(mocks.createMany).toHaveBeenCalledWith(expect.objectContaining({ data: expect.arrayContaining([expect.objectContaining({ tourId: fixtureTour.id, breakfast: false, lunch: true, dinner: true })]) }))
+    expect(mocks.createMany).toHaveBeenCalledWith(expect.objectContaining({ data: expect.arrayContaining([expect.objectContaining({ tourId: fixtureTour.id, titleMn: fixtureTour.itinerary[0].localizedTitle?.mn, titleKr: fixtureTour.itinerary[0].localizedTitle?.kr, titleEn: fixtureTour.itinerary[0].title, breakfast: false, lunch: true, dinner: true })]) }))
+  })
+
+  it('falls back to edited general fields when localized values are absent', async () => {
+    const tour = { ...fixtureTour, localizedTitle: undefined, localizedSubtitle: undefined }
+    await expect(saveItinerary(tour)).resolves.toEqual({ success: true })
+    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({
+      data: expect.objectContaining({
+        titleMn: tour.title,
+        titleKr: tour.title,
+        titleEn: tour.title,
+        subtitleMn: tour.subtitle,
+        subtitleKr: tour.subtitle,
+        subtitleEn: tour.subtitle,
+      }),
+    }))
   })
 
   it('returns typed save failures', async () => {
