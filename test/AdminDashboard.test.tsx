@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react'
 import { InquiryTable } from '../components/admin/AdminDashboard'
-import { inquiries } from '../lib/mock-data/inquiries'
+import type { Inquiry } from '../lib/types'
 import { withProvider } from './helpers'
+import { seedInquiries as inquiries } from './fixtures'
 
 describe('InquiryTable', () => {
   it('renders every inquiry, initials, and status classes', () => {
-    const { container } = withProvider(<InquiryTable />)
+    const { container } = withProvider(<InquiryTable inquiries={inquiries as Inquiry[]} />)
     inquiries.forEach((inquiry) => {
       expect(screen.getByText(inquiry.customer)).toBeInTheDocument()
       expect(screen.getByText(inquiry.customer.split(' ').map((part) => part[0]).join(''))).toBeInTheDocument()
@@ -14,5 +15,11 @@ describe('InquiryTable', () => {
     expect(container.querySelector('.inquiry-status.contacted')).toHaveTextContent('Холбогдсон')
     expect(container.querySelector('.inquiry-status.confirmed')).toHaveTextContent('Баталгаажсан')
     expect(container.querySelectorAll('.inquiry-row')).toHaveLength(inquiries.length + 1)
+  })
+
+  it('renders a localized empty state without inquiry rows', () => {
+    const { container } = withProvider(<InquiryTable inquiries={[]} />)
+    expect(screen.getByText('현재 접수된 문의가 없습니다.')).toBeInTheDocument()
+    expect(container.querySelectorAll('.inquiry-row')).toHaveLength(2)
   })
 })

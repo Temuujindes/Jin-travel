@@ -1,12 +1,35 @@
 'use client'
 
 import { Bar, BarChart, CartesianGrid, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import type { AnalyticsPoint } from '../../lib/types'
 import { useTranslation } from '../LanguageContext'
 import { AdminShell } from './AdminShell'
 
 const traffic = [{ name: 'South Korea', value: 78 }, { name: 'USA / EU', value: 15 }, { name: 'Others', value: 7 }]
-const popular = [{ name: 'Gobi Express', value: 68 }, { name: 'Ultimate Gobi', value: 42 }, { name: 'Khuvsgul Express', value: 31 }]
-const growth = [{ month: 'Jan', value: 18 }, { month: 'Feb', value: 24 }, { month: 'Mar', value: 29 }, { month: 'Apr', value: 34 }, { month: 'May', value: 42 }, { month: 'Jun', value: 49 }, { month: 'Jul', value: 61 }, { month: 'Aug', value: 73 }, { month: 'Sep', value: 68 }, { month: 'Oct', value: 78 }, { month: 'Nov', value: 84 }, { month: 'Dec', value: 96 }]
 const tooltipStyle = { background: '#0f172a', border: '0', borderRadius: 8, color: '#fff', fontSize: 12 }
 
-export default function AnalyticsScreen() { const { t } = useTranslation(); return <AdminShell><header className="admin-header"><div><div className="admin-overline">{t('performance')}</div><h1>{t('analytics')}</h1><p>{t('businessGrowth')}</p></div><select className="period-select" defaultValue="year" aria-label={t('duration')}><option value="year">{t('yearToDate')}</option><option value="quarter">{t('lastQuarter')}</option></select></header><div className="analytics-grid"><section className="admin-panel traffic-card"><div className="panel-heading"><div><div className="admin-overline">{t('audience')}</div><h2>{t('trafficMarket')}</h2></div></div><div className="donut-wrap"><ResponsiveContainer width={190} height={190}><PieChart><Pie data={traffic} dataKey="value" innerRadius={63} outerRadius={85} paddingAngle={3} stroke="none">{traffic.map((entry, index) => <Cell key={entry.name} fill={index === 0 ? '#d97706' : index === 1 ? '#64748b' : '#cbd5e1'} />)}</Pie><Tooltip contentStyle={tooltipStyle} /></PieChart></ResponsiveContainer><div className="donut-center"><strong className="serif">78%</strong><span>{t('korea')}</span></div></div><div className="legend-list">{traffic.map((item, index) => <div key={item.name}><i style={{ background: index === 0 ? '#d97706' : index === 1 ? '#64748b' : '#cbd5e1' }} />{item.name}<strong>{item.value}%</strong></div>)}</div></section><section className="admin-panel popular-card"><div className="panel-heading"><div><div className="admin-overline">{t('demand')}</div><h2>{t('popularTours')}</h2></div></div><ResponsiveContainer width="100%" height={220}><BarChart data={popular} layout="vertical" margin={{ top: 10, right: 16, left: 16, bottom: 0 }}><CartesianGrid horizontal={false} stroke="#e2e8f0" /><XAxis type="number" hide /><YAxis type="category" dataKey="name" axisLine={false} tickLine={false} width={112} tick={{ fontSize: 11, fill: '#64748b' }} /><Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={tooltipStyle} /><Bar dataKey="value" fill="#d97706" radius={[0, 4, 4, 0]} barSize={18} /></BarChart></ResponsiveContainer></section><section className="admin-panel growth-card"><div className="panel-heading"><div><div className="admin-overline">{t('inquiries')}</div><h2>{t('inquiriesGrowth')}</h2></div><span className="chart-total">+38.4% <small>{t('share')}</small></span></div><ResponsiveContainer width="100%" height={270}><BarChart data={growth} margin={{ top: 18, right: 8, left: -24, bottom: 0 }}><CartesianGrid vertical={false} stroke="#e2e8f0" /><XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} /><Tooltip cursor={{ fill: 'rgba(245,239,230,.55)' }} contentStyle={tooltipStyle} /><Bar dataKey="value" fill="#0f172a" radius={[4, 4, 0, 0]} barSize={18} /></BarChart></ResponsiveContainer></section></div></AdminShell> }
+export default function AnalyticsScreen({ popular, growth, growthTrend }: { popular: AnalyticsPoint[]; growth: AnalyticsPoint[]; growthTrend: string }) {
+  const { t } = useTranslation()
+  const hasGrowth = growth.some((point) => point.value > 0)
+  return <AdminShell>
+    <header className="admin-header">
+      <div><div className="admin-overline">{t('performance')}</div><h1>{t('analytics')}</h1><p>{t('businessGrowth')}</p></div>
+      <select className="period-select" defaultValue="year" aria-label={t('duration')}><option value="year">{t('yearToDate')}</option><option value="quarter">{t('lastQuarter')}</option></select>
+    </header>
+    <div className="analytics-grid">
+      <section className="admin-panel traffic-card">
+        <div className="panel-heading"><div><div className="admin-overline">{t('audience')}</div><h2>{t('trafficMarket')}</h2></div></div>
+        <div className="donut-wrap"><ResponsiveContainer width={190} height={190}><PieChart><Pie data={traffic} dataKey="value" innerRadius={63} outerRadius={85} paddingAngle={3} stroke="none">{traffic.map((entry, index) => <Cell key={entry.name} fill={index === 0 ? '#d97706' : index === 1 ? '#64748b' : '#cbd5e1'} />)}</Pie><Tooltip contentStyle={tooltipStyle} /></PieChart></ResponsiveContainer><div className="donut-center"><strong className="serif">78%</strong><span>{t('korea')}</span></div></div>
+        <div className="legend-list">{traffic.map((item, index) => <div key={item.name}><i style={{ background: index === 0 ? '#d97706' : index === 1 ? '#64748b' : '#cbd5e1' }} />{item.name}<strong>{item.value}%</strong></div>)}</div>
+      </section>
+      <section className="admin-panel popular-card">
+        <div className="panel-heading"><div><div className="admin-overline">{t('demand')}</div><h2>{t('popularTours')}</h2></div></div>
+        {popular.length === 0 ? <div className="muted">{t('noAnalyticsData')}</div> : <ResponsiveContainer width="100%" height={220}><BarChart data={popular} layout="vertical" margin={{ top: 10, right: 16, left: 16, bottom: 0 }}><CartesianGrid horizontal={false} stroke="#e2e8f0" /><XAxis type="number" hide /><YAxis type="category" dataKey="name" axisLine={false} tickLine={false} width={112} tick={{ fontSize: 11, fill: '#64748b' }} /><Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={tooltipStyle} /><Bar dataKey="value" fill="#d97706" radius={[0, 4, 4, 0]} barSize={18} /></BarChart></ResponsiveContainer>}
+      </section>
+      <section className="admin-panel growth-card">
+        <div className="panel-heading"><div><div className="admin-overline">{t('inquiries')}</div><h2>{t('inquiriesGrowth')}</h2></div><span className="chart-total">{growthTrend} <small>{t('share')}</small></span></div>
+        {!hasGrowth ? <div className="muted">{t('noAnalyticsData')}</div> : <ResponsiveContainer width="100%" height={270}><BarChart data={growth} margin={{ top: 18, right: 8, left: -24, bottom: 0 }}><CartesianGrid vertical={false} stroke="#e2e8f0" /><XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} /><YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} /><Tooltip cursor={{ fill: 'rgba(245,239,230,.55)' }} contentStyle={tooltipStyle} /><Bar dataKey="value" fill="#0f172a" radius={[4, 4, 0, 0]} barSize={18} /></BarChart></ResponsiveContainer>}
+      </section>
+    </div>
+  </AdminShell>
+}

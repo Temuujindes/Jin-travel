@@ -1,0 +1,98 @@
+// Prisma schema for JIN Travel: tours, their itinerary days, booking requests and admin users.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TourStatus {
+  active
+  draft
+}
+
+// A sellable tour package. Localized copy is stored as per-language columns so a
+// single row renders every language without extra queries.
+model Tour {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  badge       String
+  titleMn     String
+  titleKr     String
+  titleEn     String
+  subtitleMn  String
+  subtitleKr  String
+  subtitleEn  String
+  duration    String
+  priceUsd    Int
+  priceMnt    String
+  rating      Float      @default(0)
+  reviews     Int        @default(0)
+  tags        String[]
+  mainImage   String
+  gallery     String[]
+  status      TourStatus @default(draft)
+  featured    Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  itineraryDays ItineraryDay[]
+  bookings      Booking[]
+}
+
+// One day of a tour's itinerary. Meals are booleans rather than a list so the
+// builder's three checkboxes map to columns directly.
+model ItineraryDay {
+  id             String  @id @default(cuid())
+  tourId         String
+  dayNumber      Int
+  titleMn        String
+  titleKr        String
+  titleEn        String
+  route          String?
+  breakfast      Boolean @default(false)
+  lunch          Boolean @default(false)
+  dinner         Boolean @default(false)
+  accommodation  String
+  activities     String[]
+  descriptionMn  String  @default("")
+  descriptionKr  String  @default("")
+  descriptionEn  String  @default("")
+  image          String
+
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([tourId, dayNumber])
+  @@index([tourId])
+}
+
+// A booking request. No payment is taken; a manager follows up via the contact field.
+model Booking {
+  id             String   @id @default(cuid())
+  tourId         String
+  customerName   String
+  contact        String
+  startDate      DateTime
+  travelers      Int
+  specialRequest String?
+  status         String   @default("Шинэ")
+  totalPrice     Int
+  referenceCode  String   @unique
+  createdAt      DateTime @default(now())
+
+  tour Tour @relation(fields: [tourId], references: [id])
+
+  @@index([createdAt])
+}
+
+// Dashboard operator. Single admin for this phase; no roles or password reset.
+model AdminUser {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  hashedPassword String
+  name           String
+  createdAt      DateTime @default(now())
+}

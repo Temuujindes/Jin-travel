@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Compass, Home, MessageCircle, Ticket, ArrowUpRight } from 'lucide-react'
@@ -13,7 +14,7 @@ export function Header(_props?: { language?: Language; setLanguage?: (language: 
   const { language, setLanguage, t } = useTranslation()
   const [scrolled, setScrolled] = useState(false)
   useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 22); window.addEventListener('scroll', onScroll); return () => window.removeEventListener('scroll', onScroll) }, [])
-  return <header className={`topbar ${scrolled ? 'scrolled' : ''}`}><Link href="/" className="wordmark">JIN / TRAVEL</Link><div className="top-actions"><div className="lang" aria-label={t('languageSelector')}>{(['mn', 'kr', 'en'] as Language[]).map((item) => <button key={item} className={language === item ? 'active' : ''} onClick={() => setLanguage(item)}>{item.toUpperCase()}</button>)}</div><a href="https://open.kakao.com" className="icon-btn" aria-label={t('chat')}><MessageCircle size={17} /></a></div></header>
+  return <header className={`topbar ${scrolled ? 'scrolled' : ''}`}><Link href="/" className="wordmark"><Image src="/logo-mark.jpg" alt="JIN Travel Mongolia" width={38} height={38} priority /><span>JIN / TRAVEL</span></Link><div className="top-actions"><div className="lang" aria-label={t('languageSelector')}>{(['mn', 'kr', 'en'] as Language[]).map((item) => <button key={item} className={language === item ? 'active' : ''} onClick={() => setLanguage(item)}>{item.toUpperCase()}</button>)}</div><a href="https://open.kakao.com" className="icon-btn" aria-label={t('chat')}><MessageCircle size={17} /></a></div></header>
 }
 
 export function BottomNav({ t: providedT }: { t?: Translate }) {

@@ -1,2 +1,11 @@
 import ToursScreen from '../../components/ToursScreen'
-export default function ToursPage() { return <ToursScreen /> }
+import { toDisplayTour } from '../../lib/mappers'
+import { prisma } from '../../lib/db'
+
+export default async function ToursPage() {
+  const rows = await prisma.tour.findMany({
+    where: { status: 'active' },
+    orderBy: { createdAt: 'asc' },
+  })
+  return <ToursScreen tours={rows.map(toDisplayTour)} />
+}
