@@ -4,3 +4,5 @@ out/
 *.tsbuildinfo
 coverage/
 .vitest/
+.env
+.env.local

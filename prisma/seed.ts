@@ -1,0 +1,412 @@
+// Seeds the real JIN Travel catalog, one sample booking, and one local admin user.
+
+import { Prisma, PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
+
+const prisma = new PrismaClient()
+
+const images = {
+  gobi: 'https://images.unsplash.com/photo-1551269901-5c5e14c25df7?auto=format&fit=crop&w=1400&q=85',
+  dunes: 'https://images.unsplash.com/photo-1509316785289-025f5b846b35?auto=format&fit=crop&w=1000&q=85',
+  ger: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1000&q=85',
+  steppe: 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?auto=format&fit=crop&w=1000&q=85',
+  lake: 'https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1000&q=85',
+}
+
+type SeedTour = {
+  slug: string
+  badge: string
+  titleMn: string
+  titleKr: string
+  titleEn: string
+  subtitleMn: string
+  subtitleKr: string
+  subtitleEn: string
+  duration: string
+  priceUsd: number
+  priceMnt: string
+  rating: number
+  reviews: number
+  tags: string[]
+  mainImage: string
+  gallery: string[]
+  days: Prisma.ItineraryDayCreateWithoutTourInput[]
+}
+
+const sourceDescription = (text: string) => ({
+  descriptionMn: text,
+  descriptionKr: text,
+  descriptionEn: text,
+})
+
+const day = (
+  title: string,
+  route: string | null,
+  meals: string[],
+  accommodation: string,
+  activities: string[],
+  image: string,
+  _description?: string,
+): Prisma.ItineraryDayCreateWithoutTourInput => ({
+  dayNumber: 0,
+  titleMn: title,
+  titleKr: title,
+  titleEn: title,
+  route,
+  breakfast: meals.includes('Breakfast'),
+  lunch: meals.includes('Lunch'),
+  dinner: meals.includes('Dinner'),
+  accommodation,
+  activities,
+  image,
+  ...sourceDescription(activities.join('\n')),
+})
+
+const tours: SeedTour[] = [
+  {
+    slug: 'gobi-4d',
+    badge: '',
+    titleMn: 'Говь-4: Хонгорын элс тэвш аялал',
+    titleKr: '고비 4일 익스프레스 & 낙타 트레킹',
+    titleEn: '4-Day Gobi Express & Camel Trekking',
+    subtitleMn: '',
+    subtitleKr: '',
+    subtitleEn: '',
+    duration: '4 Days / 3 Nights',
+    priceUsd: 580,
+    priceMnt: '₮1,980,000',
+    rating: 0,
+    reviews: 0,
+    tags: ['Ger Stay', 'Star-Gazing', '4x4 SUV', 'Camel Trekking'],
+    mainImage: images.gobi,
+    gallery: [images.gobi, images.dunes, images.ger, images.steppe],
+    days: [
+      day(
+        'UB → Dalanzadgad → Yolyn Am (Vulture Valley)',
+        '~45 km, ~1 hr',
+        ['Lunch', 'Dinner'],
+        'Ger camp near Gurvansaikhan National Park',
+        [
+          'Morning flight Ulaanbaatar → Dalanzadgad (~1.5 hrs)',
+          'Met by local guide + driver, drive to Yolyn Am (~45 km, ~1 hr)',
+          'Hike the narrow gorge in the Zuun Saikhan mountains — ice can remain on the gorge floor even in summer; watch for lammergeier (bearded vulture) overhead',
+        ],
+        images.steppe,
+        'Hike the narrow gorge in the Zuun Saikhan mountains — ice can remain on the gorge floor even in summer; watch for lammergeier (bearded vulture) overhead',
+      ),
+      day(
+        'Yolyn Am → Khongoryn Els (Singing Sand Dunes)',
+            '~180–200 km, ~4–5 hrs',
+        ['Breakfast', 'Lunch', 'Dinner'],
+        'Ger camp at Khongoryn Els',
+        [
+          'Drive to Khongoryn Els (~180–200 km, ~4–5 hrs across desert track)',
+          'Afternoon camel trek along the dune base with a local herder',
+          'Climb the dunes for sunset — Mongolia\'s tallest sand dunes (up to ~300m), known as "Duut Mankhan" (singing dunes) for the sound the wind makes across the sand',
+        ],
+        images.dunes,
+        'Climb the dunes for sunset — Mongolia\'s tallest sand dunes (up to ~300m), known as "Duut Mankhan" (singing dunes) for the sound the wind makes across the sand',
+      ),
+      day(
+        'Khongoryn Els → Bayanzag (Flaming Cliffs)',
+        '~150–180 km',
+        ['Breakfast', 'Lunch', 'Dinner'],
+        'Ger camp near Bayanzag',
+        [
+          'Sunrise option: short dune climb before breakfast',
+          'Drive to Bayanzag (~150–180 km)',
+          'Visit the red sandstone cliffs where Roy Chapman Andrews\' 1923 American Museum expedition discovered the first scientifically documented dinosaur eggs',
+          'Sunset at the cliffs — the erosion-carved red rock glows deep orange/red in late light, the source of the "Flaming Cliffs" name',
+        ],
+        images.gobi,
+        'Visit the red sandstone cliffs where Roy Chapman Andrews\' 1923 American Museum expedition discovered the first scientifically documented dinosaur eggs',
+      ),
+      day(
+        'Bayanzag → Dalanzadgad → UB',
+        '~100 km',
+        ['Breakfast'],
+        'N/A (departure day)',
+        [
+          'Morning drive to Dalanzadgad (~100 km)',
+          'Afternoon flight back to Ulaanbaatar',
+        ],
+        images.steppe,
+        'Afternoon flight back to Ulaanbaatar',
+      ),
+    ],
+  },
+  {
+        slug: 'gobi-ultimate-6d',
+        badge: '',
+        titleMn: 'Говийн туйл ба Төв Монгол-6',
+        titleKr: '6일 얼티밋 고비 & 중앙 몽골',
+        titleEn: '6-Day Ultimate Gobi & Central Mongolia',
+        subtitleMn: '',
+        subtitleKr: '',
+        subtitleEn: '',
+        duration: '6 Days / 5 Nights',
+        priceUsd: 850,
+        priceMnt: '₮2,900,000',
+        rating: 0,
+        reviews: 0,
+        tags: ['Hot Spring', 'Nomadic Family', 'Ger Stay', '4x4 SUV'],
+        mainImage: images.steppe,
+        gallery: [images.steppe, images.gobi, images.dunes, images.ger],
+        days: [
+          {
+            ...day(
+              'UB → Baga Gazriin Chuluu',
+              '~240 km, ~4 hrs',
+              ['Lunch', 'Dinner'],
+              'Ger camp',
+              [
+                'Drive south (~240 km, ~4 hrs)',
+                'Explore the granite rock formations, ancient inscriptions, and meditation caves at this sacred site',
+              ],
+              images.steppe,
+              'Explore the granite rock formations, ancient inscriptions, and meditation caves at this sacred site',
+            ),
+          },
+          {
+            ...day(
+              'Baga Gazriin Chuluu → Tsagaan Suvarga (White Stupa)',
+              '~200 km',
+              ['Breakfast', 'Lunch', 'Dinner'],
+              'Ger camp',
+              [
+                'Drive to Tsagaan Suvarga in Dundgovi province (~200 km)',
+                'Walk the rim of this large limestone escarpment, carved by wind and water into formations often compared to a Mars-like landscape',
+              ],
+              images.gobi,
+              'Walk the rim of this large limestone escarpment, carved by wind and water into formations often compared to a Mars-like landscape',
+            ),
+          },
+          {
+            ...day(
+              'Tsagaan Suvarga → Khongoryn Els',
+              '~250–280 km',
+              ['Breakfast', 'Lunch', 'Dinner'],
+              'Ger camp at Khongoryn Els',
+              [
+                'Longer driving day into Umnugovi province (~250–280 km)',
+                'Arrive at the Singing Sand Dunes in the afternoon, camel trek and dune climb at sunset',
+              ],
+              images.dunes,
+              'Arrive at the Singing Sand Dunes in the afternoon, camel trek and dune climb at sunset',
+            ),
+          },
+          {
+            ...day(
+              'Khongoryn Els → Yolyn Am → Bayanzag',
+              '~180 km; ~100 km',
+              ['Breakfast', 'Lunch', 'Dinner'],
+              'Ger camp near Bayanzag',
+              [
+                'Morning drive to Yolyn Am (~180 km), hike the ice-floored gorge',
+                'Continue to Bayanzag for sunset at the Flaming Cliffs (~100 km)',
+              ],
+              images.gobi,
+              'Continue to Bayanzag for sunset at the Flaming Cliffs (~100 km)',
+            ),
+          },
+          {
+            ...day(
+              'Bayanzag → Karakorum / Khujirt Hot Spring',
+              '~330 km',
+              ['Breakfast', 'Lunch', 'Dinner'],
+              'Ger camp with hot spring access',
+              [
+                'Long drive north toward central Mongolia (~330 km)',
+                'Evening soak at Khujirt hot spring, Övörkhangai province — a natural mineral hot spring used by Mongolians for centuries',
+              ],
+              images.ger,
+              'Evening soak at Khujirt hot spring, Övörkhangai province — a natural mineral hot spring used by Mongolians for centuries',
+            ),
+          },
+          {
+            ...day(
+              'Karakorum → UB',
+              '~370 km, ~5–6 hrs',
+              ['Breakfast', 'Lunch'],
+              'N/A (departure day)',
+              [
+                'Morning visit to Erdene Zuu Monastery, Mongolia\'s oldest Buddhist monastery, built on the site of the 13th-century Mongol Empire capital',
+                'Drive back to Ulaanbaatar (~370 km, ~5–6 hrs)',
+              ],
+              images.steppe,
+              'Drive back to Ulaanbaatar (~370 km, ~5–6 hrs)',
+            ),
+          },
+        ],
+      },
+      {
+        slug: 'khuvsgul-3d',
+        badge: '',
+        titleMn: 'Хөвсгөл нуур-3 экспресс',
+        titleKr: '3일 흡수골 호수 익스프레스',
+        titleEn: '3-Day Khuvsgul Lake Express',
+        subtitleMn: '',
+        subtitleKr: '',
+        subtitleEn: '',
+        duration: '3 Days / 2 Nights',
+        priceUsd: 450,
+        priceMnt: '₮1,530,000',
+        rating: 0,
+        reviews: 0,
+        tags: ['Ger Stay', 'Lake', 'Horseback Riding'],
+        mainImage: images.lake,
+        gallery: [images.lake, images.ger, images.steppe],
+        days: [
+          {
+            ...day(
+              'UB → Murun → Khuvsgul Lake',
+              '~100 km, ~2–3 hrs, mostly paved',
+              ['Lunch', 'Dinner'],
+              'Ger camp on the lakeshore',
+              [
+                'Morning flight Ulaanbaatar → Murun (~1.5 hrs)',
+                'Drive from Murun to the lake\'s southern shore at Khatgal (~100 km, ~2–3 hrs, mostly paved)',
+                'Afternoon arrival, relax by "the dark blue pearl of Mongolia" — Asia\'s second-largest freshwater lake by volume, surrounded by taiga forest',
+              ],
+              images.lake,
+              'Afternoon arrival, relax by "the dark blue pearl of Mongolia" — Asia\'s second-largest freshwater lake by volume, surrounded by taiga forest',
+            ),
+          },
+          {
+            ...day(
+              'Khuvsgul Lake — Horseback Riding & Taiga',
+              null,
+              ['Breakfast', 'Lunch', 'Dinner'],
+              'Ger camp on the lakeshore',
+              [
+                'Full day horseback riding along the western shore with a local herder guide, through lakeside meadows and taiga forest',
+                'Visit a local horse-herding family, try Mongolian dairy products',
+                'Optional boat trip on the lake in the afternoon',
+              ],
+              images.ger,
+              'Full day horseback riding along the western shore with a local herder guide, through lakeside meadows and taiga forest',
+            ),
+          },
+          {
+            ...day(
+              'Khuvsgul Lake → Murun → UB',
+              '~100 km',
+              ['Breakfast'],
+              'N/A (departure day)',
+              [
+                'Morning free time by the lake (fishing, photography, or rest)',
+                'Drive back to Murun (~100 km)',
+                'Afternoon flight back to Ulaanbaatar',
+              ],
+              images.lake,
+              'Morning free time by the lake (fishing, photography, or rest)',
+            ),
+          },
+        ],
+      },
+]
+
+const addDayNumbers = (days: Prisma.ItineraryDayCreateWithoutTourInput[]) =>
+  days.map((item, index) => ({ ...item, dayNumber: index + 1 }))
+
+async function main() {
+  for (const tour of tours) {
+    await prisma.tour.upsert({
+      where: { slug: tour.slug },
+      create: {
+        slug: tour.slug,
+        badge: tour.badge,
+        titleMn: tour.titleMn,
+        titleKr: tour.titleKr,
+        titleEn: tour.titleEn,
+        subtitleMn: tour.subtitleMn,
+        subtitleKr: tour.subtitleKr,
+        subtitleEn: tour.subtitleEn,
+        duration: tour.duration,
+        priceUsd: tour.priceUsd,
+        priceMnt: tour.priceMnt,
+        rating: tour.rating,
+        reviews: tour.reviews,
+        tags: tour.tags,
+        mainImage: tour.mainImage,
+        gallery: tour.gallery,
+        status: 'active',
+        featured: true,
+        itineraryDays: { create: addDayNumbers(tour.days) },
+      },
+      update: {
+        badge: tour.badge,
+        titleMn: tour.titleMn,
+        titleKr: tour.titleKr,
+        titleEn: tour.titleEn,
+        subtitleMn: tour.subtitleMn,
+        subtitleKr: tour.subtitleKr,
+        subtitleEn: tour.subtitleEn,
+        duration: tour.duration,
+        priceUsd: tour.priceUsd,
+        priceMnt: tour.priceMnt,
+        rating: tour.rating,
+        reviews: tour.reviews,
+        tags: tour.tags,
+        mainImage: tour.mainImage,
+        gallery: tour.gallery,
+        status: 'active',
+        featured: true,
+        itineraryDays: {
+          deleteMany: {},
+          create: addDayNumbers(tour.days),
+        },
+      },
+    })
+  }
+
+  const referenceCode = `JIN-${new Date().getFullYear()}-08421`
+  await prisma.booking.upsert({
+    where: { referenceCode },
+    create: {
+      tour: { connect: { slug: 'gobi-4d' } },
+      customerName: 'Sample Guest',
+      contact: 'sample@example.com',
+      startDate: new Date('2026-09-14T00:00:00.000Z'),
+      travelers: 2,
+      specialRequest: null,
+      status: 'Шинэ',
+      totalPrice: 1160,
+      referenceCode,
+    },
+    update: {
+      customerName: 'Sample Guest',
+      contact: 'sample@example.com',
+      startDate: new Date('2026-09-14T00:00:00.000Z'),
+      travelers: 2,
+      specialRequest: null,
+      status: 'Шинэ',
+      totalPrice: 1160,
+    },
+  })
+
+  // Local development defaults are intentionally non-production credentials and can be overridden with SEED_ADMIN_*.
+  const adminEmail = process.env.SEED_ADMIN_EMAIL ?? 'admin@jintravel.local'
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD ?? 'jintravel-local-only'
+  await prisma.adminUser.upsert({
+    where: { email: adminEmail },
+    create: {
+      email: adminEmail,
+      hashedPassword: await bcrypt.hash(adminPassword, 10),
+      name: 'JIN Travel Admin',
+    },
+    update: {
+      name: 'JIN Travel Admin',
+      hashedPassword: await bcrypt.hash(adminPassword, 10),
+    },
+  })
+}
+
+main()
+  .catch((error) => {
+    console.error(error)
+    process.exitCode = 1
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
+  })
