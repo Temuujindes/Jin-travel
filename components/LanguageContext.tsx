@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState } from 'react'
-import { translations } from '../lib/mock-data/translations'
+import { translations } from '../lib/i18n/translations'
 import { Language } from '../lib/types'
 
 export type TranslationKey = keyof typeof translations.en | 'gallery' | 'invalidName' | 'invalidTravelers' | 'invalidDate' | 'tourNotFound' | 'bookingFailed' | 'loadError' | 'tryAgain' | 'notFoundTitle' | 'notFoundMessage' | 'duplicateSlug' | 'invalidTitle' | 'invalidPrice' | 'createFailed' | 'saveFailed' | 'statusUpdateFailed' | 'unauthorized' | 'adminLoginTitle' | 'adminLoginDescription' | 'email' | 'password' | 'signIn' | 'signingIn' | 'invalidCredentials' | 'logout'

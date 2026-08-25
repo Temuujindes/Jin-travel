@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react'
 import { afterEach } from 'vitest'
 import { LanguageProvider, useTranslation } from '../components/LanguageContext'
-import { translations } from '../lib/mock-data/translations'
+import { translations } from '../lib/i18n/translations'
 
 const responseDescriptor = Object.getOwnPropertyDescriptor(translations.kr, 'response')
 

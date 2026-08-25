@@ -1,8 +1,8 @@
 import { screen } from '@testing-library/react'
 import { InquiryTable } from '../components/admin/AdminDashboard'
-import { inquiries } from '../lib/mock-data/inquiries'
 import type { Inquiry } from '../lib/types'
 import { withProvider } from './helpers'
+import { seedInquiries as inquiries } from './fixtures'
 
 describe('InquiryTable', () => {
   it('renders every inquiry, initials, and status classes', () => {

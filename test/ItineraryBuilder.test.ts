@@ -1,10 +1,11 @@
-import { featuredTour } from '../lib/mock-data/tours'
 import { reducer } from '../components/admin/ItineraryBuilder'
+import { fixtureTour } from './fixtures'
 
 const makeTour = () => ({
-  ...featuredTour,
-  itinerary: featuredTour.itinerary.map((day) => ({
+  ...fixtureTour,
+  itinerary: [...fixtureTour.itinerary, ...fixtureTour.itinerary, ...fixtureTour.itinerary, ...fixtureTour.itinerary].map((day, index) => ({
     ...day,
+    day: index + 1,
     meals: [...day.meals],
     activities: [...day.activities],
     descriptions: { mn: 'mn', kr: 'kr', en: 'en' },
@@ -16,7 +17,7 @@ describe('ItineraryBuilder reducer', () => {
     const tour = makeTour()
     const result = reducer(tour, { type: 'tour', field: 'title', value: 'Updated' })
     expect(result.title).toBe('Updated')
-    expect(tour.title).toBe(featuredTour.title)
+    expect(tour.title).toBe(fixtureTour.title)
     expect(result).not.toBe(tour)
   })
 

@@ -1,9 +1,8 @@
-import { booking } from '../lib/mock-data/bookings'
-import { inquiries } from '../lib/mock-data/inquiries'
-import { tours } from '../lib/mock-data/tours'
-import { translations } from '../lib/mock-data/translations'
+import { translations } from '../lib/i18n/translations'
+import { addDayNumbers, seedTours as tours } from '../prisma/seed-data'
+import { seedBooking as booking, seedInquiries as inquiries } from './fixtures'
 
-describe('mock data invariants', () => {
+describe('seed data invariants', () => {
   it('contains unique slugs, gallery images, and non-empty tags', () => {
     expect(new Set(tours.map((tour) => tour.slug)).size).toBe(tours.length)
     tours.forEach((tour) => {
@@ -13,7 +12,7 @@ describe('mock data invariants', () => {
   })
 
   it('numbers itinerary days sequentially from one', () => {
-    tours.forEach((tour) => expect(tour.itinerary.map((day) => day.day)).toEqual(tour.itinerary.map((_, index) => index + 1)))
+    tours.forEach((tour) => expect(addDayNumbers(tour.days).map((day) => day.dayNumber)).toEqual(tour.days.map((_, index) => index + 1)))
   })
 
   it('documents the translation key-set gap across languages', () => {
