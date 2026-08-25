@@ -1,5 +1,6 @@
 import React from 'react'
 import { screen } from '@testing-library/react'
+import { vi } from 'vitest'
 import HomeScreen from '../components/HomeScreen'
 import ToursScreen from '../components/ToursScreen'
 import ContactScreen from '../components/ContactScreen'
@@ -17,8 +18,7 @@ import ContactPage from '../app/contact/page'
 import BookingPage from '../app/my-booking/page'
 import ToursPage from '../app/tours/page'
 import TourPage from '../app/tours/[slug]/page'
-import StaticTourPage from '../app/tours/gobi-4d/page'
-import TourBookingPage from '../app/tours/gobi-4d/book/page'
+import TourBookingPage from '../app/tours/[slug]/book/page'
 import DashboardPage from '../app/dashboard/page'
 import DashboardLayout from '../app/dashboard/layout'
 import AnalyticsPage from '../app/dashboard/analytics/page'
@@ -28,15 +28,65 @@ import BuilderPage from '../app/dashboard/tours/builder/page'
 import { AdminShell } from '../components/admin/AdminShell'
 import { withProvider } from './helpers'
 
+vi.mock('../lib/db', () => {
+  const tour = {
+    id: 'tour-wrapper',
+    slug: 'gobi-4d',
+    titleMn: 'Говийн аялал',
+    titleKr: '고비 여행',
+    titleEn: 'Gobi journey',
+    subtitleMn: 'Говийн аялал',
+    subtitleKr: '고비 여행',
+    subtitleEn: 'Gobi journey',
+    badge: 'Featured',
+    duration: '4 days',
+    priceUsd: 580,
+    priceMnt: '₮1',
+    rating: 4.9,
+    reviews: 1,
+    tags: [],
+    mainImage: 'hero',
+    gallery: ['hero'],
+    status: 'active',
+    featured: true,
+    itineraryDays: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+  return {
+    prisma: {
+      tour: {
+        findMany: vi.fn().mockResolvedValue([tour]),
+        findUnique: vi.fn().mockResolvedValue(tour),
+      },
+      booking: {
+        findFirst: vi.fn().mockResolvedValue({
+          id: 'booking-wrapper',
+          tourId: tour.id,
+          customerName: 'Ada',
+          contact: '@ada',
+          startDate: new Date('2026-09-14T00:00:00.000Z'),
+          travelers: 2,
+          specialRequest: null,
+          status: 'Шинэ',
+          totalPrice: 1160,
+          referenceCode: 'JIN-2026-08421',
+          createdAt: new Date(),
+          tour,
+        }),
+      },
+    },
+  }
+})
+
 describe('App Router page wrappers', () => {
   it('points each route wrapper at its screen component', async () => {
-    expect(HomePage().type).toBe(HomeScreen)
+    expect((await HomePage()).type).toBe(HomeScreen)
     expect(ContactPage().type).toBe(ContactScreen)
-    expect(BookingPage().type).toBe(MyBookingScreen)
-    expect(ToursPage().type).toBe(ToursScreen)
+    expect((await BookingPage()).type).toBe(MyBookingScreen)
+    expect((await ToursPage()).type).toBe(ToursScreen)
     expect((await TourPage({ params: Promise.resolve({ slug: 'gobi-4d' }) })).type).toBe(TourDetailScreen)
-    expect(StaticTourPage().type).toBe(TourDetailScreen)
-    expect(TourBookingPage().type).toBe(BookingFlow)
+    expect((await TourBookingPage({ params: Promise.resolve({ slug: 'gobi-4d' }) })).type).toBe(BookingFlow)
     expect(DashboardPage().type).toBe(AdminDashboard)
     expect(AnalyticsPage().type).toBe(AnalyticsScreen)
     const inquiries = withProvider(<InquiriesPage />)

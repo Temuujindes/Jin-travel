@@ -1,14 +1,12 @@
 import { fireEvent, screen } from '@testing-library/react'
 import TourDetailScreen from '../components/TourDetailScreen'
+import { fixtureTour } from './fixtures'
 import { withProvider } from './helpers'
 
 describe('TourDetailScreen', () => {
-  it('resolves a slug and falls back to the first tour', () => {
-    const { unmount } = withProvider(<TourDetailScreen slug="gobi-4d" />)
-    expect(screen.getByRole('heading', { name: '고비 익스프레스 & 낙타 트레킹' })).toBeInTheDocument()
-    unmount()
-    withProvider(<TourDetailScreen slug="unknown" />)
-    expect(screen.getByRole('heading', { name: '고비 익스프레스 & 낙타 트레킹' })).toBeInTheDocument()
+  it('renders the tour resolved by the server route seam', () => {
+    withProvider(<TourDetailScreen tour={fixtureTour} />)
+    expect(screen.getByRole('heading', { name: fixtureTour.localizedTitle?.kr })).toBeInTheDocument()
   })
 
   it('uses an override and updates gallery and accordion state', () => {
@@ -28,7 +26,7 @@ describe('TourDetailScreen', () => {
       gallery: ['hero', 'second'],
       itinerary: [{ day: 1, title: 'First day', meals: [], accommodation: 'Tent', activities: [], image: 'day', descriptions: { kr: 'Details' } }],
     }
-    withProvider(<TourDetailScreen tourOverride={override} />)
+    withProvider(<TourDetailScreen tour={override} />)
     expect(screen.getByRole('heading', { name: '오버라이드' })).toBeInTheDocument()
     expect(screen.getByText('1 / 2')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: '갤러리 2' }))
@@ -42,7 +40,7 @@ describe('TourDetailScreen', () => {
   })
 
   it('toggles the like button', () => {
-    withProvider(<TourDetailScreen />)
+    withProvider(<TourDetailScreen tour={fixtureTour} />)
     const button = screen.getByRole('button', { name: '투어 저장' })
     expect(button.querySelector('svg')).not.toHaveAttribute('fill', 'currentColor')
     fireEvent.click(button)
