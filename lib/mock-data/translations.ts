@@ -17,6 +17,14 @@ Object.assign(translations.mn, {
   bookingFailed: 'Захиалга илгээгдсэнгүй. Дахин оролдоно уу.',
   loadError: 'Мэдээллийг ачаалж чадсангүй.',
   tryAgain: 'Дахин оролдох',
+  notFoundTitle: 'Энэ аялал олдсонгүй.',
+  notFoundMessage: 'Таны хүссэн хуудас ашиглах боломжгүй байна.',
+  duplicateSlug: 'Ийм нэртэй аялал аль хэдийн байна.',
+  invalidTitle: 'Аяллын нэрийг оруулна уу.',
+  invalidPrice: 'Зөв үнэ оруулна уу.',
+  createFailed: 'Аяллыг үүсгэж чадсангүй. Дахин оролдоно уу.',
+  saveFailed: 'Аяллын хөтөлбөрийг хадгалж чадсангүй. Дахин оролдоно уу.',
+  statusUpdateFailed: 'Төлөвийг шинэчилж чадсангүй. Дахин оролдоно уу.',
 })
 
 Object.assign(translations.kr, {
@@ -27,6 +35,14 @@ Object.assign(translations.kr, {
   bookingFailed: '예약을 접수하지 못했습니다. 다시 시도해주세요.',
   loadError: '정보를 불러오지 못했습니다.',
   tryAgain: '다시 시도',
+  notFoundTitle: '이 여행을 찾을 수 없습니다.',
+  notFoundMessage: '요청하신 페이지를 이용할 수 없습니다.',
+  duplicateSlug: '같은 이름의 투어가 이미 있습니다.',
+  invalidTitle: '투어 제목을 입력해주세요.',
+  invalidPrice: '유효한 가격을 입력해주세요.',
+  createFailed: '투어를 만들지 못했습니다. 다시 시도해주세요.',
+  saveFailed: '일정을 저장하지 못했습니다. 다시 시도해주세요.',
+  statusUpdateFailed: '상태를 변경하지 못했습니다. 다시 시도해주세요.',
 })
 
 Object.assign(translations.en, {
@@ -37,4 +53,12 @@ Object.assign(translations.en, {
   bookingFailed: 'The booking could not be submitted. Please try again.',
   loadError: 'We could not load this information.',
   tryAgain: 'Try again',
+  notFoundTitle: 'This journey could not be found.',
+  notFoundMessage: 'The page you requested is no longer available.',
+  duplicateSlug: 'A tour with this title already exists.',
+  invalidTitle: 'Please enter a tour title.',
+  invalidPrice: 'Please enter a valid price.',
+  createFailed: 'The tour could not be created. Please try again.',
+  saveFailed: 'The itinerary could not be saved. Please try again.',
+  statusUpdateFailed: 'The tour status could not be updated. Please try again.',
 })

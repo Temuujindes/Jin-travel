@@ -1,4 +1,4 @@
-import { toDisplayBooking, toDisplayDay, toDisplayTour } from '../lib/mappers'
+import { toDisplayBooking, toDisplayDay, toDisplayTour, toPrismaDayInput } from '../lib/mappers'
 
 describe('display mappers', () => {
   it('maps itinerary meals in the builder-compatible order', () => {
@@ -137,5 +137,42 @@ describe('display mappers', () => {
       tour,
     })
     expect(booking.date).toBe('2026.09.14')
+  })
+
+  it('maps display day fields back to Prisma columns', () => {
+    const result = toPrismaDayInput({
+      day: 4,
+      title: 'Desert sunset',
+      distance: undefined,
+      meals: ['Breakfast', 'Dinner'],
+      accommodation: 'Ger camp',
+      activities: ['Walk'],
+      image: 'day',
+      descriptions: { mn: 'MN', kr: 'KR', en: 'EN' },
+    })
+    expect(result).toEqual({
+      dayNumber: 4,
+      titleMn: 'Desert sunset',
+      titleKr: 'Desert sunset',
+      titleEn: 'Desert sunset',
+      route: null,
+      breakfast: true,
+      lunch: false,
+      dinner: true,
+      accommodation: 'Ger camp',
+      activities: ['Walk'],
+      descriptionMn: 'MN',
+      descriptionKr: 'KR',
+      descriptionEn: 'EN',
+      image: 'day',
+    })
+    expect(toPrismaDayInput({
+      day: 1,
+      title: 'Day',
+      meals: [],
+      accommodation: '',
+      activities: [],
+      image: '',
+    })).toMatchObject({ descriptionMn: '', descriptionKr: '', descriptionEn: '' })
   })
 })

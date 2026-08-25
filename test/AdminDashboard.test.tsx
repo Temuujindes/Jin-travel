@@ -1,11 +1,12 @@
 import { screen } from '@testing-library/react'
 import { InquiryTable } from '../components/admin/AdminDashboard'
 import { inquiries } from '../lib/mock-data/inquiries'
+import type { Inquiry } from '../lib/types'
 import { withProvider } from './helpers'
 
 describe('InquiryTable', () => {
   it('renders every inquiry, initials, and status classes', () => {
-    const { container } = withProvider(<InquiryTable />)
+    const { container } = withProvider(<InquiryTable inquiries={inquiries as Inquiry[]} />)
     inquiries.forEach((inquiry) => {
       expect(screen.getByText(inquiry.customer)).toBeInTheDocument()
       expect(screen.getByText(inquiry.customer.split(' ').map((part) => part[0]).join(''))).toBeInTheDocument()

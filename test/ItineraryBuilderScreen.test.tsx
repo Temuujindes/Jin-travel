@@ -1,7 +1,13 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 import ItineraryBuilder from '../components/admin/ItineraryBuilder'
+import { saveItinerary } from '../app/actions/itinerary'
 import { withProvider } from './helpers'
+import { fixtureTour } from './fixtures'
+
+vi.mock('../app/actions/itinerary', () => ({
+  saveItinerary: vi.fn().mockResolvedValue({ success: true }),
+}))
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -9,13 +15,13 @@ afterEach(() => {
 })
 
 describe('ItineraryBuilder screen', () => {
-  it('edits builder fields, uploads an image, and removes a day', () => {
+  it('edits builder fields, uploads an image, and removes a day', async () => {
     const createObjectURL = vi.fn().mockReturnValue('blob:image')
     Object.defineProperty(URL, 'createObjectURL', {
       configurable: true,
       value: createObjectURL,
     })
-    const { container } = withProvider(<ItineraryBuilder />)
+    const { container } = withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
     const editorPanel = container.querySelector('.editor-panel')!
     const generalFields = editorPanel.querySelectorAll('input, textarea')
     fireEvent.change(generalFields[0], { target: { value: 'Updated tour' } })
@@ -23,7 +29,7 @@ describe('ItineraryBuilder screen', () => {
     fireEvent.change(generalFields[2], { target: { value: '5 Days' } })
     fireEvent.change(generalFields[3], { target: { value: '700' } })
     fireEvent.click(screen.getByRole('button', { name: '저장' }))
-    expect(screen.getByRole('button', { name: '저장됨' })).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByRole('button', { name: '저장됨' })).toBeInTheDocument())
 
     const firstDay = container.querySelector('.day-editor')!
     const dayInputs = firstDay.querySelectorAll('input')
@@ -36,6 +42,7 @@ describe('ItineraryBuilder screen', () => {
     const fileInput = container.querySelector('input[type="file"]')!
     fireEvent.change(fileInput, { target: { files: [file] } })
     expect(createObjectURL).toHaveBeenCalledWith(file)
+    fireEvent.change(fileInput, { target: { files: [] } })
     fireEvent.click(screen.getAllByRole('button', { name: '취소' })[0])
 
     const initialDayCount = container.querySelectorAll('.day-editor').length
@@ -48,5 +55,12 @@ describe('ItineraryBuilder screen', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete day' })[0])
     expect(container.querySelectorAll('.day-editor')).toHaveLength(initialDayCount)
     createObjectURL.mockRestore()
+  })
+
+  it('does not show saved state when persistence fails', async () => {
+    vi.mocked(saveItinerary).mockResolvedValueOnce({ success: false, code: 'saveFailed' })
+    withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
+    fireEvent.click(screen.getByRole('button', { name: '저장' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: '저장' })).toBeInTheDocument())
   })
 })

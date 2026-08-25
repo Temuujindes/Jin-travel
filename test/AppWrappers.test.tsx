@@ -11,6 +11,7 @@ import AdminDashboard from '../components/admin/AdminDashboard'
 import TourManagement from '../components/admin/TourManagement'
 import ItineraryBuilder from '../components/admin/ItineraryBuilder'
 import AnalyticsScreen from '../components/admin/AnalyticsScreen'
+import InquiriesScreen from '../components/admin/InquiriesScreen'
 import { LanguageProvider } from '../components/LanguageContext'
 import RootLayout from '../app/layout'
 import HomePage from '../app/page'
@@ -31,7 +32,13 @@ import { withProvider } from './helpers'
 const wrapperMocks = vi.hoisted(() => ({
   tourFindMany: vi.fn(),
   tourFindUnique: vi.fn(),
+  tourFindFirst: vi.fn(),
+  tourCount: vi.fn(),
   bookingFindFirst: vi.fn(),
+  bookingCount: vi.fn(),
+  bookingAggregate: vi.fn(),
+  bookingFindMany: vi.fn(),
+  bookingGroupBy: vi.fn(),
 }))
 
 vi.mock('../lib/db', () => {
@@ -64,8 +71,12 @@ vi.mock('../lib/db', () => {
       tour: {
         findMany: wrapperMocks.tourFindMany.mockResolvedValue([tour]),
         findUnique: wrapperMocks.tourFindUnique.mockResolvedValue(tour),
+        findFirst: wrapperMocks.tourFindFirst.mockResolvedValue(tour),
+        count: wrapperMocks.tourCount.mockResolvedValue(1),
       },
       booking: {
+        count: wrapperMocks.bookingCount.mockResolvedValue(1),
+        aggregate: wrapperMocks.bookingAggregate.mockResolvedValue({ _sum: { totalPrice: 1160 } }),
         findFirst: wrapperMocks.bookingFindFirst.mockResolvedValue({
           id: 'booking-wrapper',
           tourId: tour.id,
@@ -80,6 +91,21 @@ vi.mock('../lib/db', () => {
           createdAt: new Date(),
           tour,
         }),
+        findMany: wrapperMocks.bookingFindMany.mockResolvedValue([{
+          id: 'booking-wrapper',
+          tourId: tour.id,
+          customerName: 'Ada',
+          contact: '@ada',
+          startDate: new Date('2026-09-14T00:00:00.000Z'),
+          travelers: 2,
+          specialRequest: null,
+          status: 'Шинэ',
+          totalPrice: 1160,
+          referenceCode: 'JIN-2026-08421',
+          createdAt: new Date(),
+          tour,
+        }]),
+        groupBy: wrapperMocks.bookingGroupBy.mockResolvedValue([{ tourId: tour.id, _count: { tourId: 1 } }]),
       },
     },
   }
@@ -95,13 +121,22 @@ describe('App Router page wrappers', () => {
     const bookingRoute = await TourBookingPage({ params: Promise.resolve({ slug: 'gobi-4d' }) })
     expect(bookingRoute.type).toBe(BookingFlow)
     expect(bookingRoute.props.tourId).toBe('tour-wrapper')
-    expect(DashboardPage().type).toBe(AdminDashboard)
-    expect(AnalyticsPage().type).toBe(AnalyticsScreen)
-    const inquiries = withProvider(<InquiriesPage />)
+    expect((await DashboardPage()).type).toBe(AdminDashboard)
+    wrapperMocks.bookingAggregate.mockResolvedValueOnce({ _sum: { totalPrice: null } })
+    const zeroRevenueDashboard = await DashboardPage()
+    expect(zeroRevenueDashboard.props.metrics.revenue).toBe(0)
+    expect((await AnalyticsPage()).type).toBe(AnalyticsScreen)
+    const inquiriesRoute = await InquiriesPage()
+    expect(inquiriesRoute.type).toBe(InquiriesScreen)
+    const inquiries = withProvider(<InquiriesScreen inquiries={[]} />)
     expect(screen.getByRole('heading', { name: '문의 관리' })).toBeInTheDocument()
     inquiries.unmount()
-    expect(ToursDashboardPage().type).toBe(TourManagement)
-    expect(BuilderPage().type).toBe(ItineraryBuilder)
+    expect((await ToursDashboardPage()).type).toBe(TourManagement)
+    expect((await BuilderPage({ searchParams: Promise.resolve({ tour: 'gobi-4d' }) })).type).toBe(ItineraryBuilder)
+    expect((await BuilderPage({ searchParams: Promise.resolve({}) })).type).toBe(ItineraryBuilder)
+    wrapperMocks.tourFindFirst.mockResolvedValueOnce(null)
+    const emptyBuilder = await BuilderPage({ searchParams: Promise.resolve({}) })
+    expect(emptyBuilder.props.initialTour).toMatchObject({ id: '', itinerary: [] })
     expect(DashboardLayout({ children: <span /> })).toEqual(<span />)
   })
 
@@ -125,5 +160,12 @@ describe('App Router page wrappers', () => {
     await expect(TourPage({ params: Promise.resolve({ slug: 'missing' }) })).rejects.toThrow('NEXT_HTTP_ERROR_FALLBACK;404')
     wrapperMocks.tourFindUnique.mockResolvedValueOnce(null)
     await expect(TourBookingPage({ params: Promise.resolve({ slug: 'missing' }) })).rejects.toThrow('NEXT_HTTP_ERROR_FALLBACK;404')
+  })
+
+  it('uses tour IDs when analytics has no matching title row', async () => {
+    wrapperMocks.bookingGroupBy.mockResolvedValueOnce([{ tourId: 'missing-tour', _count: { tourId: 2 } }])
+    wrapperMocks.tourFindMany.mockResolvedValueOnce([])
+    const result = await AnalyticsPage()
+    expect(result.props.popular).toEqual([{ name: 'missing-tour', value: 2 }])
   })
 })

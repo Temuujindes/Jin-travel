@@ -40,6 +40,8 @@ export const fixtureTour: Tour = {
   localizedSubtitle: {
     kr: '사막, 낙타 트레킹, 별이 가득한 밤하늘을 한 번에',
   },
+  status: 'active',
+  featured: true,
 }
 
 export const fixtureBooking: Booking = {

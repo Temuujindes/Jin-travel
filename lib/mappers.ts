@@ -1,7 +1,7 @@
 // Maps Prisma records into the display types consumed by client screens.
 
 import type { Prisma } from '@prisma/client'
-import type { Booking, ItineraryDay, Tour } from './types'
+import type { Booking, Inquiry, ItineraryDay, Tour } from './types'
 
 type TourWithItinerary = Prisma.TourGetPayload<{
   include: { itineraryDays: true }
@@ -9,6 +9,7 @@ type TourWithItinerary = Prisma.TourGetPayload<{
 
 type TourRow = Prisma.TourGetPayload<object> | TourWithItinerary
 type BookingWithTour = Prisma.BookingGetPayload<{ include: { tour: true } }>
+type BookingWithTourTitle = Prisma.BookingGetPayload<{ include: { tour: { select: { titleEn: true } } } }>
 type ItineraryDayRow = Prisma.ItineraryDayGetPayload<object>
 
 export function toDisplayDay(row: ItineraryDayRow): ItineraryDay {
@@ -82,5 +83,42 @@ export function toDisplayBooking(row: BookingWithTour): Booking {
     date: formattedDate,
     travelers: row.travelers,
     total: row.totalPrice,
+  }
+}
+
+export function toDisplayInquiry(row: BookingWithTourTitle): Inquiry {
+  const date = row.createdAt
+  const formattedDate = [
+    date.getUTCFullYear(),
+    String(date.getUTCMonth() + 1).padStart(2, '0'),
+    String(date.getUTCDate()).padStart(2, '0'),
+  ].join('.')
+
+  return {
+    id: row.id,
+    customer: row.customerName,
+    tour: row.tour.titleEn,
+    kakao: row.contact,
+    date: formattedDate,
+    status: row.status,
+  }
+}
+
+export function toPrismaDayInput(day: ItineraryDay): Prisma.ItineraryDayCreateWithoutTourInput {
+  return {
+    dayNumber: day.day,
+    titleMn: day.title,
+    titleKr: day.title,
+    titleEn: day.title,
+    route: day.distance ?? null,
+    breakfast: day.meals.includes('Breakfast'),
+    lunch: day.meals.includes('Lunch'),
+    dinner: day.meals.includes('Dinner'),
+    accommodation: day.accommodation,
+    activities: day.activities,
+    descriptionMn: day.descriptions?.mn ?? '',
+    descriptionKr: day.descriptions?.kr ?? '',
+    descriptionEn: day.descriptions?.en ?? '',
+    image: day.image,
   }
 }

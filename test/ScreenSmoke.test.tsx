@@ -17,6 +17,12 @@ describe('screen smoke coverage', () => {
     expect(hero.style.backgroundImage).toContain('photo-1509316785289')
   })
 
+  it('falls back to the hero image when gallery slides are missing', () => {
+    const shortTour = { ...fixtureTour, gallery: [] }
+    const { container } = withProvider(<HomeScreen tours={[shortTour]} featuredTour={shortTour} />)
+    expect(container.querySelector('.hero-slide')?.getAttribute('style')).toContain('photo-1551269901')
+  })
+
   it('renders the home collection without a featured hero', () => {
     const { container } = withProvider(<HomeScreen tours={[]} />)
     expect(container.querySelector('.hero')).not.toBeInTheDocument()
@@ -60,10 +66,10 @@ describe('screen smoke coverage', () => {
     const contact = withProvider(<ContactScreen />)
     expect(screen.getByText('hello@jintravel.mn')).toBeInTheDocument()
     contact.unmount()
-    const dashboard = withProvider(<AdminDashboard />)
+    const dashboard = withProvider(<AdminDashboard metrics={{ totalBookings: 3, monthlyBookings: 1, revenue: 580, activeTours: 2, bookingTrend: '+100%', revenueTrend: '+100%', tourTrend: '+1' }} inquiries={[]} />)
     expect(screen.getByRole('heading', { name: '대시보드' })).toBeInTheDocument()
     dashboard.unmount()
-    withProvider(<ItineraryBuilder />)
+    withProvider(<ItineraryBuilder initialTour={fixtureTour} />)
     expect(screen.getByRole('heading', { name: /수정 사항은 고객 화면에 즉시 반영/ })).toBeInTheDocument()
   })
 

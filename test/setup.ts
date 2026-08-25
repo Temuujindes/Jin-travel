@@ -16,6 +16,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('next/navigation', () => ({
   usePathname: () => getMockPathname(),
+  useRouter: () => ({ refresh: vi.fn() }),
   notFound: () => {
     throw new Error('NEXT_HTTP_ERROR_FALLBACK;404')
   },

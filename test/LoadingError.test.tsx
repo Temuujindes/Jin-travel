@@ -6,6 +6,7 @@ import ToursError from '../app/tours/error'
 import ToursLoading from '../app/tours/loading'
 import DetailError from '../app/tours/[slug]/error'
 import DetailLoading from '../app/tours/[slug]/loading'
+import NotFound from '../app/not-found'
 import { LanguageProvider } from '../components/LanguageContext'
 
 describe('public route loading and error states', () => {
@@ -28,5 +29,11 @@ describe('public route loading and error states', () => {
       expect(reset).toHaveBeenCalledOnce()
       unmount()
     }
+  })
+
+  it('renders the localized application not-found state', () => {
+    render(<LanguageProvider><NotFound /></LanguageProvider>)
+    expect(screen.getByText('이 여행을 찾을 수 없습니다.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('href', '/')
   })
 })
